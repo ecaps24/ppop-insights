@@ -1,0 +1,23 @@
+# Bytecode
+__pycache__/
+*.py[cod]
+
+# Environments
+.env
+.venv/
+venv/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Editors/IDE
+.vscode/
+.idea/
+
+# Data dumps (optional)
+# *.csv
