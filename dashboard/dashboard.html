@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPOP.insights</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: radial-gradient(1200px 800px at 10% -10%, #7aa0ff33 0%, transparent 60%),
+                        radial-gradient(1400px 900px at 100% 0%, #b37aff33 0%, transparent 60%),
+                        linear-gradient(135deg, #0f172a 0%, #1f2937 60%, #111827 100%);
+            color: #e5e7eb;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 16px;
+            color: #e5e7eb;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            margin-bottom: 4px;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            background: rgba(17, 24, 39, 0.7);
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-card h3 {
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            color: #9ca3af;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+            color: #f9fafb;
+        }
+
+        .sb19 { color: #f87171; }
+        .bini { color: #60a5fa; }
+
+        .growth {
+            font-size: 0.9rem;
+            color: #34d399;
+        }
+
+        .growth.negative {
+            color: #f87171;
+        }
+
+        .chart-container {
+            background: rgba(17, 24, 39, 0.7);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(10px);
+        }
+
+        .chart-title {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            color: #e5e7eb;
+            text-align: center;
+            letter-spacing: -0.01em;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 280px;
+        }
+
+        .charts-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .chart-half {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .comparison-table {
+            background: rgba(17, 24, 39, 0.7);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            margin-top: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px 18px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        th {
+            background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.03) 100%);
+            font-weight: 600;
+            color: #d1d5db;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            font-size: 0.95rem;
+            color: #e5e7eb;
+        }
+
+        tbody tr:hover {
+            background: rgba(255,255,255,0.03);
+        }
+
+        tbody tr:nth-child(even) {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 32px;
+            color: #e5e7eb;
+            font-size: 1.05rem;
+        }
+
+        .error {
+            background: #ef4444;
+            color: white;
+            padding: 14px;
+            border-radius: 12px;
+            margin: 16px 0;
+        }
+
+        .last-updated {
+            text-align: center;
+            color: rgba(229, 231, 235, 0.85);
+            margin-top: 16px;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.75rem;
+            }
+            .chart-wrapper {
+                height: 320px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎵 PPOP.insights 🎵</h1>
+            <p>Music Analytics Dashboard</p>
+        </div>
+
+        <div id="loading" class="loading">
+            Loading dashboard data...
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+
+        <div id="dashboard" style="display: none;">
+            <!-- Current Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Monthly Listeners</h3>
+                    <div class="stat-value" id="total-listeners">-</div>
+                    <div class="growth" id="total-info">Combined across all artists</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Highest in Period</h3>
+                    <div class="stat-value" id="highest-listeners">-</div>
+                    <div class="growth" id="highest-artist">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Change</h3>
+                    <div class="stat-value" id="total-change">-</div>
+                    <div class="growth" id="change-info">From oldest to latest date</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Percentage Change</h3>
+                    <div class="stat-value" id="percentage-change">-</div>
+                    <div class="growth" id="percentage-info">Period growth rate</div>
+                </div>
+            </div>
+
+            <!-- Filters/Slicers -->
+            <div class="chart-container" style="padding: 12px;">
+                <div style="display:flex; flex-wrap: wrap; align-items:center; gap:8px; justify-content:space-between;">
+                    <div style="display:flex; align-items:center; gap:12px; color:#d1d5db; flex-wrap: wrap;">
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <label for="rangePreset" style="font-size:0.9rem;">Date Range:</label>
+                            <select id="rangePreset" style="background:#111827;border:1px solid rgba(255,255,255,0.08);color:#e5e7eb;padding:6px 8px;border-radius:8px;cursor:pointer;font-size:0.85rem;">
+                                <option value="all">All</option>
+                                <option value="last7">Last 7 days</option>
+                                <option value="mtd">Month to date</option>
+                            </select>
+                            <span id="rangeLabel" style="font-size:0.8rem; opacity:0.9;"></span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <label for="artistFilter" style="font-size:0.9rem;">Artist:</label>
+                            <select id="artistFilter" style="background:#111827;border:1px solid rgba(255,255,255,0.08);color:#e5e7eb;padding:6px 8px;border-radius:8px;cursor:pointer;font-size:0.85rem;">
+                                <option value="all">All</option>
+                                <option value="SB19">SB19</option>
+                                <option value="BINI">BINI</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button id="yZoomToggle" style="background:#111827;border:1px solid rgba(255,255,255,0.08);color:#e5e7eb;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:0.85rem;">Zoom small changes</button>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="charts-row">
+                <!-- Bar Chart -->
+                <div class="chart-container chart-half">
+                    <div class="chart-title">Monthly Listeners</div>
+                    <div class="chart-wrapper">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Line Chart -->
+                <div class="chart-container chart-half">
+                    <div class="chart-title">Daily Changes</div>
+                    <div class="chart-wrapper">
+                        <canvas id="lineChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="comparison-table">
+                <table>
+                    <thead>
+                        <tr id="table-header">
+                            <th>Date</th>
+                            <th>Group</th>
+                            <th>Monthly Listeners</th>
+                            <th>Change</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-table">
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="last-updated" id="last-updated">
+                Last updated: -
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class MusicDashboard {
+            constructor() {
+                this.data = [];
+                this.charts = {};
+                this.opmArtists = [];
+                this.zoomMode = false;
+                this.range = { start: 0, end: 29 };
+                this.rangePreset = 'all';
+                this.artistFilter = 'all';
+                this.init();
+            }
+
+            async init() {
+                try {
+                    await this.loadData();
+                    this.processData();
+                    this.createCharts();
+                    this.updateStats();
+                    this.populateTable();
+                    this.showDashboard();
+                } catch (error) {
+                    this.showError('Failed to load dashboard data: ' + error.message);
+                }
+            }
+
+            async loadData() {
+                try {
+                    // Try to load from multiple sources
+                    const sources = [
+                        '../data/historical/monthly_listeners.csv',
+                        '../data/raw/scheduled_monthly_listeners.csv'
+                    ];
+
+                    let allData = [];
+                    
+                    for (const source of sources) {
+                        try {
+                            const response = await fetch(source);
+                            if (response.ok) {
+                                const csvText = await response.text();
+                                const sourceData = this.parseCSV(csvText);
+                                allData = allData.concat(sourceData);
+                            }
+                        } catch (e) {
+                            console.log(`Could not load ${source}`);
+                        }
+                    }
+
+                    if (allData.length === 0) {
+                        // Fallback to sample data if files not accessible
+                        allData = this.generateSampleData();
+                    }
+
+                    this.data = allData.sort((a, b) => new Date(a.scrape_date) - new Date(b.scrape_date));
+                } catch (error) {
+                    throw new Error('No data sources available');
+                }
+            }
+
+            parseCSV(csvText) {
+                const lines = csvText.split(/\r?\n/).filter(l => l.trim().length > 0);
+                if (lines.length === 0) return [];
+                const headers = this.parseCSVLine(lines[0]);
+                const data = [];
+
+                for (let i = 1; i < lines.length; i++) {
+                    const values = this.parseCSVLine(lines[i]);
+                    const row = {};
+                    headers.forEach((header, index) => {
+                        row[header.trim()] = (values[index] ?? '').trim();
+                    });
+
+                    const artist = row.artist_name || row.artist || '';
+                    const listenersRaw = (row.monthly_listeners || '').toString();
+                    const listeners = parseInt(listenersRaw.replace(/,/g, ''));
+                    const scrapeDate = row.scrape_date || row.date || '';
+
+                    if (artist && Number.isFinite(listeners) && scrapeDate) {
+                        data.push({
+                            artist_name: artist,
+                            monthly_listeners: listeners,
+                            scrape_date: scrapeDate,
+                            source: row.data_source || 'csv'
+                        });
+                    }
+                }
+
+                return data;
+            }
+
+            generateSampleData() {
+                // Generate sample data if files are not accessible
+                const data = [];
+                const startDate = new Date();
+                startDate.setDate(startDate.getDate() - 30);
+
+                for (let i = 0; i < 30; i++) {
+                    const date = new Date(startDate);
+                    date.setDate(date.getDate() + i);
+                    
+                    // SB19 data with slight variations
+                    data.push({
+                        artist_name: 'SB19',
+                        monthly_listeners: 1720632 + Math.floor(Math.random() * 10000) - 5000,
+                        scrape_date: date.toISOString().split('T')[0] + ' 12:00:00',
+                        source: 'sample'
+                    });
+                    
+                    // BINI data with growth trend
+                    data.push({
+                        artist_name: 'BINI',
+                        monthly_listeners: 1977848 + Math.floor(Math.random() * 15000) - 7500 + (i * 500),
+                        scrape_date: date.toISOString().split('T')[0] + ' 12:00:00',
+                        source: 'sample'
+                    });
+                }
+
+                return data;
+            }
+
+            processData() {
+                // Group data by artist
+                this.sb19Data = this.data.filter(d => d.artist_name === 'SB19');
+                this.biniData = this.data.filter(d => d.artist_name === 'BINI');
+
+                // Get latest values
+                this.latestSB19 = this.sb19Data[this.sb19Data.length - 1];
+                this.latestBINI = this.biniData[this.biniData.length - 1];
+
+                // Calculate growth (compare last 7 days)
+                this.sb19Growth = this.calculateGrowth(this.sb19Data);
+                this.biniGrowth = this.calculateGrowth(this.biniData);
+            }
+
+            calculateGrowth(artistData) {
+                if (artistData.length < 7) return 0;
+                
+                const recent = artistData.slice(-7);
+                const older = artistData.slice(-14, -7);
+                
+                if (older.length === 0) return 0;
+                
+                const recentAvg = recent.reduce((sum, d) => sum + d.monthly_listeners, 0) / recent.length;
+                const olderAvg = older.reduce((sum, d) => sum + d.monthly_listeners, 0) / older.length;
+                
+                return ((recentAvg - olderAvg) / olderAvg) * 100;
+            }
+
+            createCharts() {
+                this.createBarChart();
+                this.createLineChart();
+            }
+
+            getChartData() {
+                const filteredData = this.getFilteredData();
+                const allDates = [...new Set(filteredData.map(d => d.scrape_date.split(' ')[0]))].sort();
+                
+                // Get data for each artist
+                const artists = [...new Set(filteredData.map(d => d.artist_name))];
+                const artistData = {};
+                const artistDeltas = {};
+                
+                artists.forEach(artist => {
+                    const values = allDates.map(date => {
+                        const record = filteredData.find(d => d.artist_name === artist && d.scrape_date.startsWith(date));
+                        return record ? record.monthly_listeners : null;
+                    });
+                    artistData[artist] = values;
+                    
+                    // Calculate deltas
+                    artistDeltas[artist] = values.map((v, i) => 
+                        (i === 0 || v == null || values[i-1] == null) ? 0 : v - values[i-1]
+                    );
+                });
+                
+                const labels = allDates.map(date => {
+                    try { return window.dateFns.format(new Date(date), 'MMM d'); } catch { return date; }
+                });
+                
+                return { labels, artistData, artistDeltas, artists };
+            }
+
+            createBarChart() {
+                const ctx = document.getElementById('barChart').getContext('2d');
+                const { labels, artistData, artists } = this.getChartData();
+                
+                if (this.charts.bar) {
+                    try { this.charts.bar.destroy(); } catch {}
+                }
+                
+                // Create datasets for bars only
+                const datasets = [];
+                const colors = {
+                    'SB19': { bg: 'rgba(96,165,250,0.85)', border: '#2980b9' },
+                    'BINI': { bg: 'rgba(167,139,250,0.85)', border: '#6d28d9' },
+                    // Add more colors for future artists
+                    'default': { bg: 'rgba(156,163,175,0.85)', border: '#6b7280' }
+                };
+                
+                artists.forEach(artist => {
+                    if (this.artistFilter === 'all' || this.artistFilter === artist) {
+                        const color = colors[artist] || colors['default'];
+                        datasets.push({
+                            label: artist,
+                            data: artistData[artist],
+                            backgroundColor: color.bg,
+                            borderColor: color.border,
+                            borderWidth: 1,
+                            borderRadius: 6,
+                            borderSkipped: false,
+                            maxBarThickness: 40
+                        });
+                    }
+                });
+                
+                // Determine y-axis range for better trend visibility
+                const combined = Object.values(artistData).flat().filter(v => typeof v === 'number');
+                let yMin, yMax;
+                if (combined.length) {
+                    const localMin = Math.min(...combined);
+                    const localMax = Math.max(...combined);
+                    const range = localMax - localMin;
+                    
+                    if (this.zoomMode || range < localMax * 0.1) {
+                        // Zoom mode or small variations - tighter range
+                        const padding = Math.max(range * 0.15, 10000);
+                        yMin = Math.floor((localMin - padding) / 1000) * 1000;
+                        yMax = Math.ceil((localMax + padding) / 1000) * 1000;
+                        
+                        // Ensure minimum range for visibility
+                        if (yMax - yMin < 50000) {
+                            const center = (yMin + yMax) / 2;
+                            yMin = center - 25000;
+                            yMax = center + 25000;
+                        }
+                    } else {
+                        // Normal mode - start from reasonable baseline
+                        yMin = Math.floor(localMin * 0.95 / 10000) * 10000;
+                        yMax = Math.ceil(localMax * 1.05 / 10000) * 10000;
+                    }
+                }
+                
+                this.charts.bar = new Chart(ctx, {
+                    type: 'bar',
+                    data: { labels, datasets },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+                        datasets: { bar: { categoryPercentage: 0.8, barPercentage: 0.9 } },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: { maxRotation: 0, autoSkip: true }
+                            },
+                            y: (() => {
+                                const base = {
+                                    grid: { color: 'rgba(255,255,255,0.06)', drawBorder: false },
+                                    ticks: { 
+                                        callback: function(value) { 
+                                            return Math.round(value / 1000) + 'k'; 
+                                        },
+                                        maxTicksLimit: 8
+                                    }
+                                };
+                                if (typeof yMin === 'number') base.min = yMin;
+                                if (typeof yMax === 'number') base.max = yMax;
+                                return base;
+                            })()
+                        },
+                        plugins: {
+                            tooltip: {
+                                mode: 'index', intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.dataset.label}: ${context.parsed.y.toLocaleString()}`;
+                                    }
+                                }
+                            },
+                            legend: { display: true, position: 'top' }
+                        }
+                    }
+                });
+            }
+            
+            createLineChart() {
+                const ctx = document.getElementById('lineChart').getContext('2d');
+                const { labels, artistDeltas, artists } = this.getChartData();
+                
+                if (this.charts.line) {
+                    try { this.charts.line.destroy(); } catch {}
+                }
+                
+                // Create datasets for lines only
+                const datasets = [];
+                const colors = {
+                    'SB19': '#60a5fa',
+                    'BINI': '#a78bfa',
+                    // Add more colors for future artists
+                    'default': '#9ca3af'
+                };
+                
+                artists.forEach(artist => {
+                    if (this.artistFilter === 'all' || this.artistFilter === artist) {
+                        const color = colors[artist] || colors['default'];
+                        datasets.push({
+                            label: `Δ ${artist}`,
+                            data: artistDeltas[artist],
+                            tension: 0.3,
+                            pointRadius: 3,
+                            pointHoverRadius: 5,
+                            borderWidth: 2,
+                            segment: {
+                                borderColor: ctx => (ctx.p1.parsed.y >= 0 ? '#34d399' : '#ef4444')
+                            },
+                            pointBackgroundColor: ctx => (ctx.parsed.y >= 0 ? '#34d399' : '#ef4444'),
+                            pointBorderColor: ctx => (ctx.parsed.y >= 0 ? '#34d399' : '#ef4444'),
+                            borderColor: color
+                        });
+                    }
+                });
+                
+                // Range for delta line axis - optimized for trend visibility
+                const deltaCombined = Object.values(artistDeltas).flat().filter(v => typeof v === 'number');
+                let yMin, yMax;
+                if (deltaCombined.length) {
+                    const dMin = Math.min(...deltaCombined);
+                    const dMax = Math.max(...deltaCombined);
+                    const range = dMax - dMin;
+                    
+                    if (range === 0) {
+                        // All zeros or same value
+                        yMin = dMin - 5000;
+                        yMax = dMax + 5000;
+                    } else {
+                        // Add padding based on range, with minimum for small changes
+                        const padding = Math.max(range * 0.2, 2000);
+                        yMin = dMin - padding;
+                        yMax = dMax + padding;
+                        
+                        // Ensure the scale is centered around zero for better interpretation
+                        const absMax = Math.max(Math.abs(yMin), Math.abs(yMax));
+                        yMin = -absMax;
+                        yMax = absMax;
+                    }
+                }
+                
+                this.charts.line = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels, datasets },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: { maxRotation: 0, autoSkip: true }
+                            },
+                            y: (() => {
+                                const base = {
+                                    grid: { 
+                                        color: 'rgba(255,255,255,0.06)', 
+                                        drawBorder: false,
+                                        drawOnChartArea: true
+                                    },
+                                    ticks: { 
+                                        callback: function(value) { 
+                                            const sign = value >= 0 ? '+' : '';
+                                            return sign + (value / 1000) + 'k'; 
+                                        },
+                                        maxTicksLimit: 10
+                                    },
+                                    // Add zero line for reference
+                                    borderColor: 'rgba(255,255,255,0.2)',
+                                    borderWidth: 1
+                                };
+                                if (typeof yMin === 'number') base.min = yMin;
+                                if (typeof yMax === 'number') base.max = yMax;
+                                return base;
+                            })()
+                        },
+                        plugins: {
+                            tooltip: {
+                                mode: 'index', intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        const sign = context.parsed.y > 0 ? '+' : '';
+                                        return `${context.dataset.label}: ${sign}${context.parsed.y.toLocaleString()}`;
+                                    }
+                                }
+                            },
+                            legend: { display: true, position: 'top' }
+                        }
+                    }
+                });
+            }
+
+
+            getFilteredData() {
+                let filteredData = this.data;
+                
+                // Apply artist filter
+                if (this.artistFilter !== 'all') {
+                    filteredData = filteredData.filter(d => d.artist_name === this.artistFilter);
+                }
+                
+                // Apply date range filter
+                if (this.rangePreset !== 'all') {
+                    const allDates = [...new Set(filteredData.map(d => d.scrape_date.split(' ')[0]))].sort();
+                    let startIdx = 0;
+                    
+                    if (this.rangePreset === 'last7') {
+                        startIdx = Math.max(0, allDates.length - 7);
+                    } else if (this.rangePreset === 'mtd') {
+                        const today = new Date(allDates[allDates.length - 1]);
+                        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+                        for (let i = 0; i < allDates.length; i++) {
+                            const d = new Date(allDates[i]);
+                            if (d >= startOfMonth) { startIdx = i; break; }
+                        }
+                    }
+                    
+                    const validDates = allDates.slice(startIdx);
+                    filteredData = filteredData.filter(d => validDates.includes(d.scrape_date.split(' ')[0]));
+                }
+                
+                return filteredData;
+            }
+
+            updateStats() {
+                const filteredData = this.getFilteredData();
+                
+                if (filteredData.length === 0) {
+                    // Handle empty data case
+                    document.getElementById('total-listeners').textContent = '0';
+                    document.getElementById('highest-listeners').textContent = '0';
+                    document.getElementById('highest-artist').textContent = 'No data';
+                    document.getElementById('total-change').textContent = '0';
+                    document.getElementById('percentage-change').textContent = '0%';
+                    return;
+                }
+                
+                // Get all unique artists in filtered data
+                const artists = [...new Set(filteredData.map(d => d.artist_name))];
+                
+                // Sort data by date
+                const sortedData = filteredData.sort((a, b) => new Date(a.scrape_date) - new Date(b.scrape_date));
+                
+                // Get oldest and latest dates
+                const oldestDate = sortedData[0].scrape_date.split(' ')[0];
+                const latestDate = sortedData[sortedData.length - 1].scrape_date.split(' ')[0];
+                
+                // Get data by date for calculations
+                const oldestData = filteredData.filter(d => d.scrape_date.startsWith(oldestDate));
+                const latestData = filteredData.filter(d => d.scrape_date.startsWith(latestDate));
+                
+                // 1st Card: Total Monthly Listeners (current/latest)
+                const totalListeners = latestData.reduce((sum, d) => sum + d.monthly_listeners, 0);
+                document.getElementById('total-listeners').textContent = totalListeners.toLocaleString();
+                
+                // 2nd Card: Highest in Period
+                let highestArtist = '';
+                let highestListeners = 0;
+                filteredData.forEach(d => {
+                    if (d.monthly_listeners > highestListeners) {
+                        highestListeners = d.monthly_listeners;
+                        highestArtist = d.artist_name;
+                    }
+                });
+                document.getElementById('highest-listeners').textContent = highestListeners.toLocaleString();
+                document.getElementById('highest-artist').textContent = highestArtist || 'No data';
+                
+                // 3rd Card: Total Change (oldest to latest)
+                const oldestTotal = oldestData.reduce((sum, d) => sum + d.monthly_listeners, 0);
+                const latestTotal = latestData.reduce((sum, d) => sum + d.monthly_listeners, 0);
+                const totalChange = latestTotal - oldestTotal;
+                
+                const totalChangeEl = document.getElementById('total-change');
+                totalChangeEl.textContent = `${totalChange > 0 ? '+' : ''}${totalChange.toLocaleString()}`;
+                totalChangeEl.className = totalChange >= 0 ? 'stat-value' : 'stat-value';
+                totalChangeEl.style.color = totalChange >= 0 ? '#f9fafb' : '#ef4444';
+                
+                // 4th Card: Percentage Change
+                const percentageChange = oldestTotal > 0 ? ((totalChange / oldestTotal) * 100) : 0;
+                
+                const percentageChangeEl = document.getElementById('percentage-change');
+                percentageChangeEl.textContent = `${percentageChange > 0 ? '+' : ''}${percentageChange.toFixed(2)}%`;
+                percentageChangeEl.className = percentageChange >= 0 ? 'stat-value' : 'stat-value';
+                percentageChangeEl.style.color = percentageChange >= 0 ? '#f9fafb' : '#ef4444';
+                
+                // Update info text based on date range
+                if (oldestDate === latestDate) {
+                    document.getElementById('change-info').textContent = 'Single day data';
+                    document.getElementById('percentage-info').textContent = 'Single day data';
+                } else {
+                    const oldestFormatted = (function(){ try { return window.dateFns.format(new Date(oldestDate), 'MMM d'); } catch { return oldestDate; } })();
+                    const latestFormatted = (function(){ try { return window.dateFns.format(new Date(latestDate), 'MMM d'); } catch { return latestDate; } })();
+                    document.getElementById('change-info').textContent = `${oldestFormatted} to ${latestFormatted}`;
+                    document.getElementById('percentage-info').textContent = `${oldestFormatted} to ${latestFormatted}`;
+                }
+                
+                // Last updated
+                const lastUpdate = this.data.length > 0 ? new Date(this.data[this.data.length - 1].scrape_date) : new Date();
+                document.getElementById('last-updated').textContent = `Last updated: ${lastUpdate.toLocaleString()}`;
+            }
+
+            populateTable() {
+                const tbody = document.getElementById('data-table');
+                const filteredData = this.getFilteredData();
+                const allDatesAsc = [...new Set(filteredData.map(d => d.scrape_date.split(' ')[0]))].sort();
+                const dates = [...allDatesAsc].reverse();
+
+                tbody.innerHTML = '';
+
+                // Get all artists in filtered data
+                const artists = [...new Set(filteredData.map(d => d.artist_name))];
+                
+                // Create lookup maps for each artist
+                const dataByArtistAndDate = {};
+                artists.forEach(artist => {
+                    dataByArtistAndDate[artist] = Object.fromEntries(
+                        filteredData.filter(d => d.artist_name === artist)
+                            .map(d => [d.scrape_date.split(' ')[0], d.monthly_listeners])
+                    );
+                });
+
+                // Create rows for each date, with separate entries for each artist
+                dates.slice(0, 20).forEach((date, idx) => {
+                    const prevDate = dates[idx + 1];
+                    const dateCell = (function(){ try { return window.dateFns.format(new Date(date), 'MMM d, yyyy'); } catch { return new Date(date).toLocaleDateString(); } })();
+
+                    artists.forEach(artist => {
+                        const currentVal = dataByArtistAndDate[artist][date];
+                        const prevVal = prevDate ? dataByArtistAndDate[artist][prevDate] : undefined;
+                        const deltaVal = (typeof currentVal === 'number' && typeof prevVal === 'number') ? (currentVal - prevVal) : 0;
+
+                        // Add row if data exists
+                        if (typeof currentVal === 'number') {
+                            const row = tbody.insertRow();
+                            const deltaSign = deltaVal > 0 ? '+' : '';
+                            const deltaClass = deltaVal >= 0 ? 'growth' : 'growth negative';
+                            row.innerHTML = `
+                                <td>${dateCell}</td>
+                                <td>${artist}</td>
+                                <td>${currentVal.toLocaleString()}</td>
+                                <td><span class="${deltaClass}">${deltaSign}${(deltaVal || 0).toLocaleString()}</span></td>
+                            `;
+                        }
+                    });
+                });
+            }
+
+            showDashboard() {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+            }
+
+            showError(message) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error').textContent = message;
+            }
+
+            // OPM Artists rendering and controls
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = new MusicDashboard();
+            const btn = document.getElementById('yZoomToggle');
+            if (btn) {
+                btn.addEventListener('click', () => {
+                    app.zoomMode = !app.zoomMode;
+                    btn.textContent = app.zoomMode ? 'Reset scale (100–2500k)' : 'Zoom small changes';
+                    app.createBarChart();
+                });
+            }
+            const preset = document.getElementById('rangePreset');
+            const rLabel = document.getElementById('rangeLabel');
+            function updateLabelAllDates() {
+                rLabel.textContent = app.rangePreset === 'all' ? 'All days' : (app.rangePreset === 'last7' ? 'Last 7 days' : 'Month to date');
+            }
+            if (preset) {
+                updateLabelAllDates();
+                preset.addEventListener('change', () => {
+                    app.rangePreset = preset.value;
+                    updateLabelAllDates();
+                    app.updateStats();
+                    app.createBarChart();
+                    app.createLineChart();
+                    app.populateTable();
+                });
+            }
+            const artistSel = document.getElementById('artistFilter');
+            if (artistSel) {
+                artistSel.addEventListener('change', () => {
+                    app.artistFilter = artistSel.value;
+                    app.updateStats();
+                    app.createBarChart();
+                    app.createLineChart();
+                    app.populateTable();
+                });
+            }
+        });
+    </script>
+</body>
+</html>
