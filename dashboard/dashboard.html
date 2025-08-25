@@ -320,6 +320,40 @@
                 this.init();
             }
 
+            // Simple CSV line parser supporting quoted fields and escaped quotes
+            parseCSVLine(line) {
+                const values = [];
+                let current = '';
+                let inQuotes = false;
+                for (let i = 0; i < line.length; i++) {
+                    const char = line[i];
+                    if (inQuotes) {
+                        if (char === '"') {
+                            // Lookahead for escaped quote
+                            if (i + 1 < line.length && line[i + 1] === '"') {
+                                current += '"';
+                                i++; // skip escaped quote
+                            } else {
+                                inQuotes = false;
+                            }
+                        } else {
+                            current += char;
+                        }
+                    } else {
+                        if (char === '"') {
+                            inQuotes = true;
+                        } else if (char === ',') {
+                            values.push(current);
+                            current = '';
+                        } else {
+                            current += char;
+                        }
+                    }
+                }
+                values.push(current);
+                return values;
+            }
+
             async init() {
                 try {
                     await this.loadData();
