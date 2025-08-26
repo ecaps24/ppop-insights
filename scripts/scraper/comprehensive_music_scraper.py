@@ -337,8 +337,12 @@ def main():
         success = scraper.export_to_csv(all_songs, args.output, mode=export_mode)
         
         if success:
+            # Also append to historical file
+            historical_file = '/home/ecaps24/dev/kworb-scraper/data/historical/comprehensive_streams.csv'
+            scraper.export_to_csv(all_songs, historical_file, mode='a')
             scraper.show_summary(all_songs)
             print(f"\n✅ Scraping complete! Data saved to: {args.output}")
+            print(f"✅ Historical data updated: {historical_file}")
         else:
             print("❌ Failed to export data")
             sys.exit(1)

@@ -21,3 +21,23 @@ logs/
 
 # Data dumps (optional)
 # *.csv
+
+# Test files
+test_*.csv
+debug_*.csv
+temp_*.csv
+mobile_*.csv
+enhanced_*.csv
+
+# Backup files
+*.bak
+*.backup
+
+# Python virtual environment
+ENV/
+env.bak/
+venv.bak/
+
+# Temporary files
+*.tmp
+*.temp

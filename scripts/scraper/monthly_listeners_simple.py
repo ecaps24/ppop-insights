@@ -49,12 +49,10 @@ class SimpleMonthlyListenersScraper:
             meta_match = re.search(meta_pattern, html_content, re.IGNORECASE)
             
             monthly_listeners = 0
-            monthly_listeners_raw = ''
             source = 'not_found'
             
             if meta_match:
                 raw_value = meta_match.group(1)
-                monthly_listeners_raw = raw_value
                 
                 # Convert to exact number
                 if raw_value.endswith('M'):
@@ -73,20 +71,29 @@ class SimpleMonthlyListenersScraper:
                     monthly_listeners = int(float(raw_value))
                     source = 'meta_exact'
             
-            # Strategy 2: For known artists, use hardcoded accurate values
-            # This is a fallback to ensure we get accurate data
-            known_values = {
-                '3g7vYcdDXnqnDKYFwqXBJP': {'name': 'SB19', 'listeners': 1720632},  # Exact from WebFetch
-                '7tNO3vJC9zlHy2IJOx34ga': {'name': 'BINI', 'listeners': 1977848},  # Exact from WebFetch
-            }
+            # Strategy 2: Try multiple patterns to find exact numbers
+            patterns_to_try = [
+                # Pattern 1: Exact pattern from testid element
+                (r'data-testid="monthly-listeners-label">([0-9,]+)\s*monthly\s+listeners', 'testid_exact'),
+                # Pattern 2: Comma-separated exact numbers
+                (r'([0-9]{1,3}(?:,[0-9]{3})*)\s*monthly\s+listeners', 'comma_exact'),
+                # Pattern 3: Numbers in JSON data
+                (r'"monthly_listeners":\s*([0-9,]+)', 'json_data'),
+                # Pattern 4: Numbers in aria-labels or data attributes  
+                (r'aria-label="[^"]*([0-9]{1,3}(?:,[0-9]{3})*)[^"]*monthly\s+listeners', 'aria_label'),
+                # Pattern 5: Numbers in meta tags
+                (r'content="[^"]*([0-9]{1,3}(?:,[0-9]{3})*)[^"]*monthly\s+listeners', 'meta_content'),
+            ]
             
-            if artist_id in known_values:
-                known_data = known_values[artist_id]
-                # Always use exact known values over rounded meta values
-                monthly_listeners = known_data['listeners']
-                monthly_listeners_raw = f"{monthly_listeners:,}"
-                source = 'known_exact'
-                artist_name = known_data['name']  # Ensure correct name
+            for pattern, source_type in patterns_to_try:
+                if not monthly_listeners:
+                    match = re.search(pattern, html_content, re.IGNORECASE)
+                    if match:
+                        raw_value = match.group(1).replace(',', '')
+                        if raw_value.isdigit():
+                            monthly_listeners = int(raw_value)
+                            source = source_type
+                            break
             
             print(f"   ✅ {artist_name}: {monthly_listeners:,} monthly listeners [{source}]")
             
@@ -94,7 +101,6 @@ class SimpleMonthlyListenersScraper:
                 'artist_name': artist_name,
                 'artist_id': artist_id,
                 'monthly_listeners': monthly_listeners,
-                'monthly_listeners_raw': monthly_listeners_raw,
                 'source_url': artist_url,
                 'scrape_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                 'data_source': 'spotify.com',
@@ -107,7 +113,6 @@ class SimpleMonthlyListenersScraper:
                 'artist_name': 'Error',
                 'artist_id': artist_id if 'artist_id' in locals() else 'unknown',
                 'monthly_listeners': 0,
-                'monthly_listeners_raw': '',
                 'source_url': artist_url,
                 'scrape_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                 'data_source': 'spotify.com',
@@ -137,7 +142,7 @@ class SimpleMonthlyListenersScraper:
             return False
         
         fieldnames = [
-            'artist_name', 'artist_id', 'monthly_listeners', 'monthly_listeners_raw',
+            'artist_name', 'artist_id', 'monthly_listeners',
             'source_url', 'scrape_date', 'data_source', 'extraction_method'
         ]
         
@@ -233,8 +238,12 @@ def main():
     
     if results:
         scraper.export_to_csv(results, args.output)
+        # Also append to historical file
+        historical_file = '/home/ecaps24/dev/kworb-scraper/data/historical/monthly_listeners.csv'
+        scraper.export_to_csv(results, historical_file)
         scraper.show_summary(results)
         print(f"\n✅ Complete! Data saved to: {args.output}")
+        print(f"✅ Historical data updated: {historical_file}")
     else:
         print("❌ No results")
 

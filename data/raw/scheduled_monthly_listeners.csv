@@ -1,0 +1,9 @@
+artist_name,artist_id,monthly_listeners,monthly_listeners_raw,source_url,scrape_date,data_source,extraction_method
+SB19,3g7vYcdDXnqnDKYFwqXBJP,1720632,"1,720,632",https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP,2025-08-25 15:46:39,spotify.com,known_exact
+BINI,7tNO3vJC9zlHy2IJOx34ga,1977848,"1,977,848",https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga,2025-08-25 15:46:41,spotify.com,known_exact
+SB19,3g7vYcdDXnqnDKYFwqXBJP,1720632,"1,720,632",https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP,2025-08-25 16:16:35,spotify.com,known_exact
+BINI,7tNO3vJC9zlHy2IJOx34ga,1977848,"1,977,848",https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga,2025-08-25 16:16:38,spotify.com,known_exact
+Unknown Artist,3g7vYcdDXnqnDKYFwqXBJP,0,,https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP,2025-08-26 00:07:32,spotify.com,not_found
+Unknown Artist,7tNO3vJC9zlHy2IJOx34ga,0,,https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga,2025-08-26 00:07:34,spotify.com,not_found
+Unknown Artist,3g7vYcdDXnqnDKYFwqXBJP,0,,https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP,2025-08-26 12:41:00,spotify.com,not_found
+Unknown Artist,7tNO3vJC9zlHy2IJOx34ga,0,,https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga,2025-08-26 12:41:03,spotify.com,not_found

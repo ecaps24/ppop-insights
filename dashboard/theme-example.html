@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPOP Theme Example</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="ppop-theme.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎵 PPOP Theme Demo 🎵</h1>
+            <p>Dark glassmorphism theme showcase</p>
+        </div>
+
+        <!-- Stats Grid Example -->
+        <div class="stats-grid">
+            <div class="stat-card fade-in">
+                <h3>Total Users</h3>
+                <div class="stat-value">2,456,789</div>
+                <div class="growth">+12.5% from last month</div>
+            </div>
+            <div class="stat-card fade-in">
+                <h3>Active Sessions</h3>
+                <div class="stat-value sb19">1,234</div>
+                <div class="growth">Currently online</div>
+            </div>
+            <div class="stat-card fade-in">
+                <h3>Revenue</h3>
+                <div class="stat-value bini">$45,678</div>
+                <div class="growth">+8.2% this week</div>
+            </div>
+            <div class="stat-card fade-in">
+                <h3>Growth Rate</h3>
+                <div class="stat-value">+15.7%</div>
+                <div class="growth negative">-2.1% from target</div>
+            </div>
+        </div>
+
+        <!-- Filter Controls Example -->
+        <div class="chart-container">
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <div class="filter-item">
+                        <label for="timeRange">Time Range:</label>
+                        <select id="timeRange">
+                            <option value="7d">Last 7 days</option>
+                            <option value="30d">Last 30 days</option>
+                            <option value="90d">Last 90 days</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="category">Category:</label>
+                        <select id="category">
+                            <option value="all">All Categories</option>
+                            <option value="music">Music</option>
+                            <option value="videos">Videos</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button class="primary">Refresh Data</button>
+                    <button>Export</button>
+                    <button>Settings</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row Example -->
+        <div class="charts-row">
+            <div class="chart-container chart-half">
+                <div class="chart-title">Analytics Overview</div>
+                <div class="chart-wrapper">
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #9ca3af;">
+                        📊 Chart placeholder - integrate with Chart.js
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-container chart-half">
+                <div class="chart-title">Performance Metrics</div>
+                <div class="chart-wrapper">
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #9ca3af;">
+                        📈 Chart placeholder - integrate with Chart.js
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Example -->
+        <div class="comparison-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Artist</th>
+                        <th>Monthly Listeners</th>
+                        <th>Change</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Aug 25, 2025</td>
+                        <td class="sb19">SB19</td>
+                        <td>1,721,621</td>
+                        <td><span class="growth">+1,247</span></td>
+                        <td>🟢 Active</td>
+                    </tr>
+                    <tr>
+                        <td>Aug 25, 2025</td>
+                        <td class="bini">BINI</td>
+                        <td>1,969,129</td>
+                        <td><span class="growth negative">-8,719</span></td>
+                        <td>🟡 Trending</td>
+                    </tr>
+                    <tr>
+                        <td>Aug 24, 2025</td>
+                        <td class="sb19">SB19</td>
+                        <td>1,720,374</td>
+                        <td><span class="growth">+2,156</span></td>
+                        <td>🟢 Active</td>
+                    </tr>
+                    <tr>
+                        <td>Aug 24, 2025</td>
+                        <td class="bini">BINI</td>
+                        <td>1,977,848</td>
+                        <td><span class="growth">+1,896</span></td>
+                        <td>🟢 Active</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Additional UI Components -->
+        <div class="chart-container">
+            <h3 class="chart-title">Additional UI Components</h3>
+            <div style="padding: 20px;">
+                <!-- Form Controls -->
+                <div style="margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 10px; color: #d1d5db;">Form Controls</h4>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <input type="text" placeholder="Search..." />
+                        <select>
+                            <option>Option 1</option>
+                            <option>Option 2</option>
+                        </select>
+                        <button>Default Button</button>
+                        <button class="primary">Primary Button</button>
+                    </div>
+                </div>
+
+                <!-- Status Examples -->
+                <div style="margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 10px; color: #d1d5db;">Status States</h4>
+                    <div class="loading" style="padding: 20px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                        Loading example...
+                    </div>
+                    <div class="error" style="margin-top: 10px;">
+                        Error message example
+                    </div>
+                </div>
+
+                <!-- Typography -->
+                <div>
+                    <h4 style="margin-bottom: 10px; color: #d1d5db;">Typography Examples</h4>
+                    <div style="display: grid; gap: 8px;">
+                        <div class="stat-value">Large Value: 1,234,567</div>
+                        <div style="color: #e5e7eb;">Regular text content</div>
+                        <div style="color: #9ca3af;">Muted text content</div>
+                        <div class="growth">Positive change: +15.3%</div>
+                        <div class="growth negative">Negative change: -5.2%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="last-updated">
+            Theme created: August 25, 2025 • PPOP.insights Dashboard Theme
+        </div>
+    </div>
+
+    <script>
+        // Add fade-in animation to cards on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.stat-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(10px)';
+                    card.classList.add('fade-in');
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 50);
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

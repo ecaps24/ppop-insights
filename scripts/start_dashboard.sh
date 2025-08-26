@@ -2,7 +2,7 @@
 cd /home/ecaps24/dev/kworb-scraper
 
 echo "🎵 Starting Music Dashboard..."
-echo "📊 Dashboard URL: http://localhost:8080/dashboard.html"
+echo "📊 Dashboard URL: http://localhost:8080/dashboard/dashboard.html"
 echo "🌐 Server will run on port 8080"
 echo "💡 Press Ctrl+C to stop the server"
 echo ""
@@ -30,7 +30,7 @@ for port in [8080, 8081, 8082, 3000]:
     try:
         with socketserver.TCPServer(('', port), CORSRequestHandler) as httpd:
             print(f'✅ Dashboard server started on port {port}!')
-            print(f'🚀 Open http://localhost:{port}/dashboard.html in your browser')
+            print(f'🚀 Open http://localhost:{port}/dashboard/dashboard.html in your browser')
             print('')
             httpd.serve_forever()
             break

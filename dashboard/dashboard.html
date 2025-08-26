@@ -255,31 +255,41 @@
                         <div style="display:flex; align-items:center; gap:6px;">
                             <label for="artistFilter" style="font-size:0.9rem;">Artist:</label>
                             <select id="artistFilter" style="background:#111827;border:1px solid rgba(255,255,255,0.08);color:#e5e7eb;padding:6px 8px;border-radius:8px;cursor:pointer;font-size:0.85rem;">
-                                <option value="all">All</option>
+                                <option value="SB19">SB19</option>
+                                <option value="BINI">BINI</option>
+                            </select>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <label for="compareFilter" style="font-size:0.9rem;">Compare to:</label>
+                            <select id="compareFilter" style="background:#111827;border:1px solid rgba(255,255,255,0.08);color:#e5e7eb;padding:6px 8px;border-radius:8px;cursor:pointer;font-size:0.85rem;">
+                                <option value="none">None</option>
                                 <option value="SB19">SB19</option>
                                 <option value="BINI">BINI</option>
                             </select>
                         </div>
                     </div>
-                    <button id="yZoomToggle" style="background:#111827;border:1px solid rgba(255,255,255,0.08);color:#e5e7eb;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:0.85rem;">Zoom small changes</button>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <button id="refreshDashboard" title="Reload with latest data" style="background:#0b5; border:1px solid rgba(255,255,255,0.08); color:#e5e7eb; padding:6px 10px; border-radius:8px; cursor:pointer; font-size:0.85rem;">Refresh</button>
+                        <button id="yZoomToggle" style="background:#111827;border:1px solid rgba(255,255,255,0.08);color:#e5e7eb;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:0.85rem;">Zoom small changes</button>
+                    </div>
                 </div>
             </div>
 
             <!-- Charts Row -->
             <div class="charts-row">
-                <!-- Bar Chart -->
+                <!-- Combined Chart (Bars + Line) -->
                 <div class="chart-container chart-half">
-                    <div class="chart-title">Monthly Listeners</div>
+                    <div class="chart-title">Monthly Listeners & Changes</div>
                     <div class="chart-wrapper">
-                        <canvas id="barChart"></canvas>
+                        <canvas id="combinedChart"></canvas>
                     </div>
                 </div>
                 
-                <!-- Line Chart -->
+                <!-- Top Tracks Chart -->
                 <div class="chart-container chart-half">
-                    <div class="chart-title">Daily Changes</div>
+                    <div class="chart-title">Top Tracks by Streams</div>
                     <div class="chart-wrapper">
-                        <canvas id="lineChart"></canvas>
+                        <canvas id="tracksChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -315,8 +325,9 @@
                 this.opmArtists = [];
                 this.zoomMode = false;
                 this.range = { start: 0, end: 29 };
-                this.rangePreset = 'all';
-                this.artistFilter = 'all';
+                this.rangePreset = 'last7';
+                this.artistFilter = 'SB19';
+                this.compareFilter = 'none';
                 this.init();
             }
 
@@ -369,17 +380,17 @@
 
             async loadData() {
                 try {
-                    // Try to load from multiple sources
+                    // Load monthly listeners data
                     const sources = [
-                        '../data/historical/monthly_listeners.csv',
-                        '../data/raw/scheduled_monthly_listeners.csv'
+                        '../data/historical/monthly_listeners.csv'
                     ];
 
                     let allData = [];
                     
                     for (const source of sources) {
                         try {
-                            const response = await fetch(source);
+                            const url = `${source}${source.includes('?') ? '&' : '?'}t=${Date.now()}`;
+                            const response = await fetch(url, { cache: 'no-store' });
                             if (response.ok) {
                                 const csvText = await response.text();
                                 const sourceData = this.parseCSV(csvText);
@@ -391,11 +402,13 @@
                     }
 
                     if (allData.length === 0) {
-                        // Fallback to sample data if files not accessible
-                        allData = this.generateSampleData();
+                        throw new Error('No historical data found');
                     }
 
                     this.data = allData.sort((a, b) => new Date(a.scrape_date) - new Date(b.scrape_date));
+                    
+                    // Load streams data for tracks chart
+                    await this.loadStreamsData();
                 } catch (error) {
                     throw new Error('No data sources available');
                 }
@@ -415,6 +428,7 @@
                     });
 
                     const artist = row.artist_name || row.artist || '';
+                    // Use only the numeric monthly_listeners column (no fallback)
                     const listenersRaw = (row.monthly_listeners || '').toString();
                     const listeners = parseInt(listenersRaw.replace(/,/g, ''));
                     const scrapeDate = row.scrape_date || row.date || '';
@@ -491,8 +505,8 @@
             }
 
             createCharts() {
-                this.createBarChart();
-                this.createLineChart();
+                this.createCombinedChart();
+                this.createTracksChart();
             }
 
             getChartData() {
@@ -524,99 +538,181 @@
                 return { labels, artistData, artistDeltas, artists };
             }
 
-            createBarChart() {
-                const ctx = document.getElementById('barChart').getContext('2d');
-                const { labels, artistData, artists } = this.getChartData();
+            async loadStreamsData() {
+                try {
+                    const url = `../data/historical/comprehensive_streams.csv?t=${Date.now()}`;
+                    const response = await fetch(url, { cache: 'no-store' });
+                    if (response.ok) {
+                        const csvText = await response.text();
+                        this.streamsData = this.parseStreamsCSV(csvText);
+                    }
+                } catch (e) {
+                    console.log('Could not load streams data');
+                    this.streamsData = [];
+                }
+            }
+
+            parseStreamsCSV(csvText) {
+                const lines = csvText.split(/\r?\n/).filter(l => l.trim().length > 0);
+                if (lines.length === 0) return [];
+                const headers = this.parseCSVLine(lines[0]);
+                const data = [];
+
+                for (let i = 1; i < lines.length; i++) {
+                    const values = this.parseCSVLine(lines[i]);
+                    const row = {};
+                    headers.forEach((header, index) => {
+                        row[header.trim()] = (values[index] ?? '').trim();
+                    });
+
+                    const songTitle = row.song_title || '';
+                    const artistName = (row.artist_name || '').replace(' - Spotify Top Songs', '');
+                    const totalStreams = parseInt((row.total_streams || '0').replace(/,/g, ''));
+                    const scrapeDate = row.scrape_date || '';
+
+                    if (songTitle && Number.isFinite(totalStreams) && scrapeDate) {
+                        data.push({
+                            song_title: songTitle,
+                            artist_name: artistName,
+                            total_streams: totalStreams,
+                            scrape_date: scrapeDate
+                        });
+                    }
+                }
+
+                return data;
+            }
+
+            createCombinedChart() {
+                const ctx = document.getElementById('combinedChart').getContext('2d');
+                const { labels, artistData, artistDeltas, artists } = this.getChartData();
                 
-                if (this.charts.bar) {
-                    try { this.charts.bar.destroy(); } catch {}
+                if (this.charts.combined) {
+                    try { this.charts.combined.destroy(); } catch {}
                 }
                 
-                // Create datasets for bars only
                 const datasets = [];
                 const colors = {
-                    'SB19': { bg: 'rgba(96,165,250,0.85)', border: '#2980b9' },
-                    'BINI': { bg: 'rgba(167,139,250,0.85)', border: '#6d28d9' },
-                    // Add more colors for future artists
-                    'default': { bg: 'rgba(156,163,175,0.85)', border: '#6b7280' }
+                    'SB19': { bg: 'rgba(96,165,250,0.85)', border: '#2980b9', line: '#60a5fa' },
+                    'BINI': { bg: 'rgba(167,139,250,0.85)', border: '#6d28d9', line: '#a78bfa' },
+                    'default': { bg: 'rgba(156,163,175,0.85)', border: '#6b7280', line: '#9ca3af' }
                 };
                 
+                // Add bar datasets (monthly listeners)
                 artists.forEach(artist => {
-                    if (this.artistFilter === 'all' || this.artistFilter === artist) {
+                    const shouldShow = this.artistFilter === 'all' || 
+                                     this.artistFilter === artist || 
+                                     (this.compareFilter !== 'none' && this.compareFilter === artist);
+                    
+                    if (shouldShow) {
                         const color = colors[artist] || colors['default'];
+                        // Bar dataset
                         datasets.push({
-                            label: artist,
+                            label: `${artist} (Listeners)`,
                             data: artistData[artist],
+                            type: 'bar',
                             backgroundColor: color.bg,
                             borderColor: color.border,
                             borderWidth: 1,
                             borderRadius: 6,
-                            borderSkipped: false,
-                            maxBarThickness: 40
+                            yAxisID: 'y'
+                        });
+                        
+                        // Line dataset (changes) - with conditional coloring for negative changes
+                        const deltas = artistDeltas[artist];
+                        const segmentColors = deltas.map(delta => delta < 0 ? '#ef4444' : color.line);
+                        const pointColors = deltas.map(delta => delta < 0 ? '#dc2626' : color.line);
+                        
+                        datasets.push({
+                            label: `${artist} (Change)`,
+                            data: artistDeltas[artist],
+                            type: 'line',
+                            borderColor: color.line,
+                            backgroundColor: 'transparent',
+                            tension: 0.3,
+                            pointRadius: 3,
+                            pointHoverRadius: 5,
+                            borderWidth: 2,
+                            yAxisID: 'y1',
+                            segment: {
+                                borderColor: (ctx) => {
+                                    const delta = ctx.p1.parsed.y;
+                                    return delta < 0 ? '#ef4444' : color.line;
+                                }
+                            },
+                            pointBackgroundColor: pointColors,
+                            pointBorderColor: pointColors
                         });
                     }
                 });
                 
-                // Determine y-axis range for better trend visibility
+                // Calculate ranges
                 const combined = Object.values(artistData).flat().filter(v => typeof v === 'number');
-                let yMin, yMax;
+                const deltaCombined = Object.values(artistDeltas).flat().filter(v => typeof v === 'number');
+                
+                let yMin, yMax, yMin1, yMax1;
                 if (combined.length) {
                     const localMin = Math.min(...combined);
                     const localMax = Math.max(...combined);
-                    const range = localMax - localMin;
-                    
-                    if (this.zoomMode || range < localMax * 0.1) {
-                        // Zoom mode or small variations - tighter range
-                        const padding = Math.max(range * 0.15, 10000);
-                        yMin = Math.floor((localMin - padding) / 1000) * 1000;
-                        yMax = Math.ceil((localMax + padding) / 1000) * 1000;
-                        
-                        // Ensure minimum range for visibility
-                        if (yMax - yMin < 50000) {
-                            const center = (yMin + yMax) / 2;
-                            yMin = center - 25000;
-                            yMax = center + 25000;
-                        }
-                    } else {
-                        // Normal mode - start from reasonable baseline
-                        yMin = Math.floor(localMin * 0.95 / 10000) * 10000;
-                        yMax = Math.ceil(localMax * 1.05 / 10000) * 10000;
-                    }
+                    yMin = Math.floor(localMin * 0.95 / 10000) * 10000;
+                    yMax = Math.ceil(localMax * 1.05 / 10000) * 10000;
                 }
                 
-                this.charts.bar = new Chart(ctx, {
+                if (deltaCombined.length) {
+                    const dMin = Math.min(...deltaCombined);
+                    const dMax = Math.max(...deltaCombined);
+                    const absMax = Math.max(Math.abs(dMin), Math.abs(dMax));
+                    yMin1 = -absMax * 1.2;
+                    yMax1 = absMax * 1.2;
+                }
+                
+                this.charts.combined = new Chart(ctx, {
                     type: 'bar',
                     data: { labels, datasets },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
-                        datasets: { bar: { categoryPercentage: 0.8, barPercentage: 0.9 } },
                         scales: {
                             x: {
                                 grid: { display: false },
                                 ticks: { maxRotation: 0, autoSkip: true }
                             },
-                            y: (() => {
-                                const base = {
-                                    grid: { color: 'rgba(255,255,255,0.06)', drawBorder: false },
-                                    ticks: { 
-                                        callback: function(value) { 
-                                            return Math.round(value / 1000) + 'k'; 
-                                        },
-                                        maxTicksLimit: 8
-                                    }
-                                };
-                                if (typeof yMin === 'number') base.min = yMin;
-                                if (typeof yMax === 'number') base.max = yMax;
-                                return base;
-                            })()
+                            y: {
+                                type: 'linear',
+                                position: 'left',
+                                grid: { color: 'rgba(255,255,255,0.06)' },
+                                ticks: { 
+                                    callback: function(value) { return Math.round(value / 1000) + 'k'; },
+                                    maxTicksLimit: 8
+                                },
+                                min: yMin,
+                                max: yMax
+                            },
+                            y1: {
+                                type: 'linear',
+                                position: 'right',
+                                grid: { display: false },
+                                ticks: { 
+                                    callback: function(value) { 
+                                        const sign = value >= 0 ? '+' : '';
+                                        return sign + (value / 1000) + 'k'; 
+                                    },
+                                    maxTicksLimit: 6
+                                },
+                                min: yMin1,
+                                max: yMax1
+                            }
                         },
                         plugins: {
                             tooltip: {
-                                mode: 'index', intersect: false,
+                                mode: 'index',
+                                intersect: false,
                                 callbacks: {
                                     label: function(context) {
+                                        if (context.dataset.type === 'line') {
+                                            const sign = context.parsed.y > 0 ? '+' : '';
+                                            return `${context.dataset.label}: ${sign}${context.parsed.y.toLocaleString()}`;
+                                        }
                                         return `${context.dataset.label}: ${context.parsed.y.toLocaleString()}`;
                                     }
                                 }
@@ -627,114 +723,150 @@
                 });
             }
             
-            createLineChart() {
-                const ctx = document.getElementById('lineChart').getContext('2d');
-                const { labels, artistDeltas, artists } = this.getChartData();
+            createTracksChart() {
+                const ctx = document.getElementById('tracksChart').getContext('2d');
                 
-                if (this.charts.line) {
-                    try { this.charts.line.destroy(); } catch {}
+                if (this.charts.tracks) {
+                    try { this.charts.tracks.destroy(); } catch {}
                 }
                 
-                // Create datasets for lines only
-                const datasets = [];
-                const colors = {
-                    'SB19': '#60a5fa',
-                    'BINI': '#a78bfa',
-                    // Add more colors for future artists
-                    'default': '#9ca3af'
-                };
+                if (!this.streamsData || this.streamsData.length === 0) {
+                    // Show placeholder if no data
+                    ctx.font = '16px Inter';
+                    ctx.fillStyle = '#9ca3af';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Loading tracks data...', ctx.canvas.width / 2, ctx.canvas.height / 2);
+                    return;
+                }
                 
-                artists.forEach(artist => {
-                    if (this.artistFilter === 'all' || this.artistFilter === artist) {
-                        const color = colors[artist] || colors['default'];
-                        datasets.push({
-                            label: `Δ ${artist}`,
-                            data: artistDeltas[artist],
-                            tension: 0.3,
-                            pointRadius: 3,
-                            pointHoverRadius: 5,
-                            borderWidth: 2,
-                            segment: {
-                                borderColor: ctx => (ctx.p1.parsed.y >= 0 ? '#34d399' : '#ef4444')
-                            },
-                            pointBackgroundColor: ctx => (ctx.parsed.y >= 0 ? '#34d399' : '#ef4444'),
-                            pointBorderColor: ctx => (ctx.parsed.y >= 0 ? '#34d399' : '#ef4444'),
-                            borderColor: color
-                        });
+                // Apply time range filtering to streams data
+                let filteredStreamsData = this.streamsData;
+                
+                // Apply date range filter similar to getFilteredData()
+                if (this.rangePreset !== 'all') {
+                    const allDates = [...new Set(filteredStreamsData.map(d => d.scrape_date.split(' ')[0]))].sort();
+                    let startIdx = 0;
+                    
+                    if (this.rangePreset === 'last7') {
+                        startIdx = Math.max(0, allDates.length - 7);
+                    } else if (this.rangePreset === 'mtd') {
+                        const today = new Date(allDates[allDates.length - 1]);
+                        const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+                        const firstOfMonthStr = firstOfMonth.toISOString().split('T')[0];
+                        startIdx = allDates.findIndex(d => d >= firstOfMonthStr);
+                        if (startIdx === -1) startIdx = 0;
+                    }
+                    
+                    const targetDates = new Set(allDates.slice(startIdx));
+                    filteredStreamsData = filteredStreamsData.filter(d => targetDates.has(d.scrape_date.split(' ')[0]));
+                }
+                
+                // Get latest data for each track within the filtered date range
+                const latestDate = Math.max(...filteredStreamsData.map(d => new Date(d.scrape_date).getTime()));
+                const cutoffTime = latestDate - (5 * 60 * 1000); // 5 minutes tolerance
+                const recentData = filteredStreamsData.filter(d => 
+                    new Date(d.scrape_date).getTime() >= cutoffTime
+                );
+                
+                // Get the most recent entry for each unique track
+                const latestByTrack = {};
+                recentData.forEach(d => {
+                    const key = `${d.artist_name}-${d.song_title}`;
+                    const currentTime = new Date(d.scrape_date).getTime();
+                    if (!latestByTrack[key] || new Date(latestByTrack[key].scrape_date).getTime() < currentTime) {
+                        latestByTrack[key] = d;
                     }
                 });
+                const latestData = Object.values(latestByTrack);
                 
-                // Range for delta line axis - optimized for trend visibility
-                const deltaCombined = Object.values(artistDeltas).flat().filter(v => typeof v === 'number');
-                let yMin, yMax;
-                if (deltaCombined.length) {
-                    const dMin = Math.min(...deltaCombined);
-                    const dMax = Math.max(...deltaCombined);
-                    const range = dMax - dMin;
-                    
-                    if (range === 0) {
-                        // All zeros or same value
-                        yMin = dMin - 5000;
-                        yMax = dMax + 5000;
-                    } else {
-                        // Add padding based on range, with minimum for small changes
-                        const padding = Math.max(range * 0.2, 2000);
-                        yMin = dMin - padding;
-                        yMax = dMax + padding;
-                        
-                        // Ensure the scale is centered around zero for better interpretation
-                        const absMax = Math.max(Math.abs(yMin), Math.abs(yMax));
-                        yMin = -absMax;
-                        yMax = absMax;
+                // Filter by selected artist(s)
+                let filteredTracks = latestData;
+                if (this.artistFilter !== 'all') {
+                    const includeArtists = new Set([this.artistFilter]);
+                    if (this.compareFilter && this.compareFilter !== 'none') {
+                        includeArtists.add(this.compareFilter);
                     }
+                    // Handle artist names that may include " - Spotify Top Songs" suffix
+                    filteredTracks = latestData.filter(d => {
+                        const artistName = d.artist_name.replace(' - Spotify Top Songs', '');
+                        return includeArtists.has(artistName);
+                    });
                 }
                 
-                this.charts.line = new Chart(ctx, {
-                    type: 'line',
-                    data: { labels, datasets },
+                // Sort by streams and take top 15
+                const topTracks = filteredTracks
+                    .sort((a, b) => b.total_streams - a.total_streams)
+                    .slice(0, 15);
+                
+                const labels = topTracks.map(t => {
+                    const title = t.song_title.length > 20 ? t.song_title.substring(0, 17) + '...' : t.song_title;
+                    const artistName = t.artist_name.replace(' - Spotify Top Songs', '');
+                    return `${title} (${artistName})`;
+                });
+                const data = topTracks.map(t => t.total_streams);
+                
+                // Color by artist
+                const backgroundColors = topTracks.map(t => {
+                    const artistName = t.artist_name.replace(' - Spotify Top Songs', '');
+                    if (artistName === 'SB19') return 'rgba(96,165,250,0.85)';
+                    if (artistName === 'BINI') return 'rgba(167,139,250,0.85)';
+                    return 'rgba(156,163,175,0.85)';
+                });
+                
+                const borderColors = topTracks.map(t => {
+                    const artistName = t.artist_name.replace(' - Spotify Top Songs', '');
+                    if (artistName === 'SB19') return '#2980b9';
+                    if (artistName === 'BINI') return '#6d28d9';
+                    return '#6b7280';
+                });
+                
+                this.charts.tracks = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Total Streams',
+                            data: data,
+                            backgroundColor: backgroundColors,
+                            borderColor: borderColors,
+                            borderWidth: 1,
+                            borderRadius: 6
+                        }]
+                    },
                     options: {
+                        indexAxis: 'y',
                         responsive: true,
                         maintainAspectRatio: false,
-                        devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
                         scales: {
                             x: {
-                                grid: { display: false },
-                                ticks: { maxRotation: 0, autoSkip: true }
+                                grid: { color: 'rgba(255,255,255,0.06)' },
+                                ticks: {
+                                    callback: function(value) {
+                                        if (value >= 1000000) {
+                                            return Math.round(value / 1000000) + 'M';
+                                        }
+                                        return Math.round(value / 1000) + 'K';
+                                    },
+                                    maxTicksLimit: 6
+                                }
                             },
-                            y: (() => {
-                                const base = {
-                                    grid: { 
-                                        color: 'rgba(255,255,255,0.06)', 
-                                        drawBorder: false,
-                                        drawOnChartArea: true
-                                    },
-                                    ticks: { 
-                                        callback: function(value) { 
-                                            const sign = value >= 0 ? '+' : '';
-                                            return sign + (value / 1000) + 'k'; 
-                                        },
-                                        maxTicksLimit: 10
-                                    },
-                                    // Add zero line for reference
-                                    borderColor: 'rgba(255,255,255,0.2)',
-                                    borderWidth: 1
-                                };
-                                if (typeof yMin === 'number') base.min = yMin;
-                                if (typeof yMax === 'number') base.max = yMax;
-                                return base;
-                            })()
+                            y: {
+                                grid: { display: false },
+                                ticks: {
+                                    font: { size: 10 },
+                                    maxRotation: 0
+                                }
+                            }
                         },
                         plugins: {
                             tooltip: {
-                                mode: 'index', intersect: false,
                                 callbacks: {
                                     label: function(context) {
-                                        const sign = context.parsed.y > 0 ? '+' : '';
-                                        return `${context.dataset.label}: ${sign}${context.parsed.y.toLocaleString()}`;
+                                        return `Streams: ${context.parsed.x.toLocaleString()}`;
                                     }
                                 }
                             },
-                            legend: { display: true, position: 'top' }
+                            legend: { display: false }
                         }
                     }
                 });
@@ -744,10 +876,12 @@
             getFilteredData() {
                 let filteredData = this.data;
                 
-                // Apply artist filter
-                if (this.artistFilter !== 'all') {
-                    filteredData = filteredData.filter(d => d.artist_name === this.artistFilter);
+                // Determine which artists to include: base artist plus optional compare
+                const includeArtists = new Set([this.artistFilter]);
+                if (this.compareFilter && this.compareFilter !== 'none' && this.compareFilter !== this.artistFilter) {
+                    includeArtists.add(this.compareFilter);
                 }
+                filteredData = filteredData.filter(d => includeArtists.has(d.artist_name));
                 
                 // Apply date range filter
                 if (this.rangePreset !== 'all') {
@@ -833,16 +967,10 @@
                 percentageChangeEl.className = percentageChange >= 0 ? 'stat-value' : 'stat-value';
                 percentageChangeEl.style.color = percentageChange >= 0 ? '#f9fafb' : '#ef4444';
                 
-                // Update info text based on date range
-                if (oldestDate === latestDate) {
-                    document.getElementById('change-info').textContent = 'Single day data';
-                    document.getElementById('percentage-info').textContent = 'Single day data';
-                } else {
-                    const oldestFormatted = (function(){ try { return window.dateFns.format(new Date(oldestDate), 'MMM d'); } catch { return oldestDate; } })();
-                    const latestFormatted = (function(){ try { return window.dateFns.format(new Date(latestDate), 'MMM d'); } catch { return latestDate; } })();
-                    document.getElementById('change-info').textContent = `${oldestFormatted} to ${latestFormatted}`;
-                    document.getElementById('percentage-info').textContent = `${oldestFormatted} to ${latestFormatted}`;
-                }
+                // Update info text with human-friendly range label
+                const infoLabel = this.getHumanRangeLabel(filteredData);
+                document.getElementById('change-info').textContent = infoLabel;
+                document.getElementById('percentage-info').textContent = infoLabel;
                 
                 // Last updated
                 const lastUpdate = this.data.length > 0 ? new Date(this.data[this.data.length - 1].scrape_date) : new Date();
@@ -907,6 +1035,19 @@
             }
 
             // OPM Artists rendering and controls
+            getHumanRangeLabel(filteredData) {
+                try {
+                    if (!Array.isArray(filteredData) || filteredData.length === 0) return 'No data';
+                    if (this.rangePreset === 'last7') return 'Last 7 days';
+                    if (this.rangePreset === 'mtd') return 'Month to date';
+                    const days = [...new Set(filteredData.map(d => d.scrape_date.split(' ')[0]))].length;
+                    if (days <= 1) return 'Single day';
+                    if (days >= 28 && days <= 32) return 'Last 30 days';
+                    return `Last ${days} days`;
+                } catch {
+                    return 'Selected period';
+                }
+            }
         }
 
         // Initialize dashboard when page loads
@@ -917,7 +1058,16 @@
                 btn.addEventListener('click', () => {
                     app.zoomMode = !app.zoomMode;
                     btn.textContent = app.zoomMode ? 'Reset scale (100–2500k)' : 'Zoom small changes';
-                    app.createBarChart();
+                    app.createCombinedChart();
+                });
+            }
+            const refreshBtn = document.getElementById('refreshDashboard');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', () => {
+                    // Force a full page reload with cache-buster so CSVs are re-fetched
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('t', Date.now().toString());
+                    window.location.replace(url.toString());
                 });
             }
             const preset = document.getElementById('rangePreset');
@@ -926,23 +1076,36 @@
                 rLabel.textContent = app.rangePreset === 'all' ? 'All days' : (app.rangePreset === 'last7' ? 'Last 7 days' : 'Month to date');
             }
             if (preset) {
+                preset.value = app.rangePreset;
                 updateLabelAllDates();
                 preset.addEventListener('change', () => {
                     app.rangePreset = preset.value;
                     updateLabelAllDates();
                     app.updateStats();
-                    app.createBarChart();
-                    app.createLineChart();
+                    app.createCombinedChart();
+                    app.createTracksChart();
                     app.populateTable();
                 });
             }
             const artistSel = document.getElementById('artistFilter');
             if (artistSel) {
+                artistSel.value = app.artistFilter;
                 artistSel.addEventListener('change', () => {
                     app.artistFilter = artistSel.value;
                     app.updateStats();
-                    app.createBarChart();
-                    app.createLineChart();
+                    app.createCombinedChart();
+                    app.createTracksChart();
+                    app.populateTable();
+                });
+            }
+            const compareSel = document.getElementById('compareFilter');
+            if (compareSel) {
+                compareSel.value = app.compareFilter;
+                compareSel.addEventListener('change', () => {
+                    app.compareFilter = compareSel.value;
+                    app.updateStats();
+                    app.createCombinedChart();
+                    app.createTracksChart();
                     app.populateTable();
                 });
             }

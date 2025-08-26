@@ -27,17 +27,17 @@ def serve_dashboard(port=8000):
     
     with socketserver.TCPServer(("", port), CORSRequestHandler) as httpd:
         print(f"🎵 Music Dashboard Server starting...")
-        print(f"📊 Dashboard URL: http://localhost:{port}/dashboard.html")
+        print(f"📊 Dashboard URL: http://localhost:{port}/dashboard/dashboard.html")
         print(f"🌐 Server running on port {port}")
         print(f"📁 Serving files from: {os.getcwd()}")
         print(f"💡 Press Ctrl+C to stop the server")
         
         # Try to open browser automatically
         try:
-            webbrowser.open(f'http://localhost:{port}/dashboard.html')
+            webbrowser.open(f'http://localhost:{port}/dashboard/dashboard.html')
             print(f"🚀 Opening dashboard in your default browser...")
         except:
-            print(f"📝 Please manually open: http://localhost:{port}/dashboard.html")
+            print(f"📝 Please manually open: http://localhost:{port}/dashboard/dashboard.html")
         
         try:
             httpd.serve_forever()
