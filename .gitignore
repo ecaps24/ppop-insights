@@ -22,6 +22,17 @@ logs/
 # Data dumps (optional)
 # *.csv
 
+# Data directories (keep small curated historical summaries only)
+data/raw/
+data/processed/
+data/historical/*.bak
+!data/historical/comprehensive_streams.csv
+!data/historical/monthly_listeners.csv
+
+# Large scheduled/temporary CSV drops (retain if you really need them)
+scheduled_comprehensive.csv
+scheduled_monthly_listeners.csv
+
 # Test files
 test_*.csv
 debug_*.csv
