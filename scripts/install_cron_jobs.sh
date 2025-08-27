@@ -9,10 +9,10 @@ CRON_FILE="/tmp/scraper_crons"
 cat > $CRON_FILE << 'EOF'
 # SB19 & BINI Music Data Scrapers - Auto-generated
 # Monthly listeners scraper - runs daily at 8:00 AM
-0 8 * * * /home/ecaps24/dev/kworb-scraper/run_scheduled_scrapers.sh monthly >> /home/ecaps24/dev/kworb-scraper/logs/monthly_listeners.log 2>&1
+0 8 * * * /home/ecaps24/dev/ppop-insights/scripts/run_scheduled_scrapers.sh monthly >> /home/ecaps24/dev/ppop-insights/logs/monthly_listeners.log 2>&1
 
 # Comprehensive songs/streams scraper - runs weekly on Sunday at 9:00 AM
-0 9 * * 0 /home/ecaps24/dev/kworb-scraper/run_scheduled_scrapers.sh comprehensive >> /home/ecaps24/dev/kworb-scraper/logs/comprehensive.log 2>&1
+0 9 * * 0 /home/ecaps24/dev/ppop-insights/scripts/run_scheduled_scrapers.sh comprehensive >> /home/ecaps24/dev/ppop-insights/logs/comprehensive.log 2>&1
 EOF
 
 # Install the cron jobs

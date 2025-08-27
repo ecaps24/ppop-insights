@@ -3,7 +3,7 @@
 # This script runs both scrapers with proper logging
 
 # Set working directory
-cd /home/ecaps24/dev/kworb-scraper
+cd /home/ecaps24/dev/ppop-insights
 
 # Function to log with timestamp
 log_with_timestamp() {

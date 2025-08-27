@@ -338,7 +338,7 @@ def main():
         
         if success:
             # Also append to historical file
-            historical_file = '/home/ecaps24/dev/kworb-scraper/data/historical/comprehensive_streams.csv'
+            historical_file = '/home/ecaps24/dev/ppop-insights/data/historical/comprehensive_streams.csv'
             scraper.export_to_csv(all_songs, historical_file, mode='a')
             scraper.show_summary(all_songs)
             print(f"\n✅ Scraping complete! Data saved to: {args.output}")

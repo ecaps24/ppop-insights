@@ -23,7 +23,7 @@ class CORSRequestHandler(http.server.SimpleHTTPRequestHandler):
 
 def serve_dashboard(port=8000):
     """Start the dashboard server"""
-    os.chdir('/home/ecaps24/dev/kworb-scraper')
+    os.chdir('/home/ecaps24/dev/ppop-insights')
     
     with socketserver.TCPServer(("", port), CORSRequestHandler) as httpd:
         print(f"🎵 Music Dashboard Server starting...")

@@ -35,8 +35,8 @@ A comprehensive music streaming analytics tool for tracking SB19 and BINI perfor
 
 ### Installation
 ```bash
-git clone https://github.com/yourusername/kworb-scraper.git
-cd kworb-scraper
+git clone https://github.com/yourusername/ppop-insights.git
+cd ppop-insights
 ```
 
 ### Running the Dashboard
@@ -68,7 +68,7 @@ python3 scripts/scraper/mobile_listeners_scraper.py --both --output latest_liste
 ## 📁 Project Structure
 
 ```
-kworb-scraper/
+ppop-insights/
 ├── dashboard/
 │   ├── dashboard.html          # Main analytics dashboard
 │   ├── ppop-theme.css         # Custom styling

@@ -384,7 +384,7 @@ def main():
     if results:
         scraper.export_to_csv(results, args.output)
         # Also append to historical file
-        historical_file = '/home/ecaps24/dev/kworb-scraper/data/historical/monthly_listeners.csv'
+        historical_file = '/home/ecaps24/dev/ppop-insights/data/historical/monthly_listeners.csv'
         scraper.export_to_csv(results, historical_file)
         scraper.show_summary(results)
         print(f"\n✅ Complete! Data saved to: {args.output}")

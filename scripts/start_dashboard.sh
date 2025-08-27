@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /home/ecaps24/dev/kworb-scraper
+cd /home/ecaps24/dev/ppop-insights
 
 echo "🎵 Starting Music Dashboard..."
 echo "📊 Dashboard URL: http://localhost:8080/dashboard/dashboard.html"
@@ -23,7 +23,7 @@ class CORSRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.send_response(200)
         self.end_headers()
 
-os.chdir('/home/ecaps24/dev/kworb-scraper')
+os.chdir('/home/ecaps24/dev/ppop-insights')
 
 # Try different ports
 for port in [8080, 8081, 8082, 3000]:
