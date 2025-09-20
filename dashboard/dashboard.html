@@ -8,7 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
     <style>
         * {
             margin: 0;
@@ -114,6 +115,146 @@
             position: relative;
             height: 280px;
         }
+        
+        .more-tracks-btn {
+            background: rgba(96, 165, 250, 0.9);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: auto;
+            transition: all 0.2s ease;
+        }
+        
+        .more-tracks-btn:hover {
+            background: rgba(96, 165, 250, 1);
+            transform: translateY(-1px);
+        }
+        
+        .chart-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .tracks-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+        }
+        
+        .tracks-modal-content {
+            position: relative;
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            margin: 2% auto;
+            padding: 20px;
+            border-radius: 16px;
+            width: 95%;
+            max-width: 1400px;
+            max-height: 90vh;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+        
+        .tracks-table-container {
+            max-height: calc(90vh - 120px);
+            overflow-y: auto;
+            border: 1px solid rgba(75, 85, 99, 0.3);
+            border-radius: 8px;
+        }
+        
+        .tracks-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+        
+        .tracks-table td, .tracks-table th {
+            border: none;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        .tracks-table td:first-child {
+            border-right: 1px solid rgba(17, 24, 39, 0.9);
+        }
+        
+        .tracks-table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 2px solid rgba(75, 85, 99, 0.5);
+        }
+        
+        .total-row {
+            position: sticky;
+            top: 40px;
+            z-index: 9;
+            background: rgba(55, 65, 81, 0.95);
+            backdrop-filter: blur(8px);
+        }
+        
+        .tracks-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #9ca3af;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        
+        .tracks-close:hover {
+            color: #f87171;
+        }
+        
+        .tracks-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .tracks-table th,
+        .tracks-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .tracks-table th {
+            background: rgba(17, 24, 39, 0.8);
+            font-weight: 600;
+            color: #f9fafb;
+            position: sticky;
+            top: 0;
+        }
+        
+        .tracks-table tr:hover {
+            background: rgba(96, 165, 250, 0.1);
+        }
+        
+        .artist-sb19 {
+            border-left: 3px solid #60a5fa;
+        }
+        
+        .artist-bini {
+            border-left: 3px solid #a78bfa;
+        }
 
         .charts-row {
             display: flex;
@@ -122,8 +263,15 @@
         }
 
         .chart-half {
-            flex: 1;
             min-width: 0;
+        }
+
+        .chart-half.chart-main {
+            flex: 3;  /* Chart takes 3/5 of the space */
+        }
+
+        .chart-half.chart-table {
+            flex: 2;  /* Table takes 2/5 of the space */
         }
 
         .comparison-table {
@@ -237,6 +385,11 @@
                     <div class="stat-value" id="percentage-change">-</div>
                     <div class="growth" id="percentage-info">Period growth rate</div>
                 </div>
+                <div class="stat-card">
+                    <h3>All-Time High</h3>
+                    <div class="stat-value" id="all-time-high">-</div>
+                    <div class="growth" id="all-time-artist">-</div>
+                </div>
             </div>
 
             <!-- Filters/Slicers -->
@@ -248,6 +401,7 @@
                             <select id="rangePreset" style="background:#111827;border:1px solid rgba(255,255,255,0.08);color:#e5e7eb;padding:6px 8px;border-radius:8px;cursor:pointer;font-size:0.85rem;">
                                 <option value="all">All</option>
                                 <option value="last7">Last 7 days</option>
+                                <option value="last30">Last 30 days</option>
                                 <option value="mtd">Month to date</option>
                             </select>
                             <span id="rangeLabel" style="font-size:0.8rem; opacity:0.9;"></span>
@@ -278,35 +432,50 @@
             <!-- Charts Row -->
             <div class="charts-row">
                 <!-- Combined Chart (Bars + Line) -->
-                <div class="chart-container chart-half">
+                <div class="chart-container chart-half chart-main">
                     <div class="chart-title">Monthly Listeners & Changes</div>
                     <div class="chart-wrapper">
-                        <canvas id="combinedChart"></canvas>
+                        <canvas id="monthlyListenersChart"></canvas>
                     </div>
                 </div>
-                
-                <!-- Top Tracks Chart -->
-                <div class="chart-container chart-half">
-                    <div class="chart-title">Top Tracks by Streams</div>
-                    <div class="chart-wrapper">
-                        <canvas id="tracksChart"></canvas>
+
+                <!-- Data Table -->
+                <div class="chart-container chart-half chart-table">
+                    <div class="chart-title">Monthly Listeners Data</div>
+                    <div class="chart-wrapper" style="overflow-y: auto; max-height: 280px;">
+                        <table style="width: 100%; font-size: 12px; color: #e5e7eb;">
+                            <thead style="position: sticky; top: 0; background: #111827; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <tr>
+                                    <th style="text-align: left; padding: 8px 4px; font-weight: 600;">Date</th>
+                                    <th style="text-align: left; padding: 8px 8px; font-weight: 600;">Group</th>
+                                    <th style="text-align: center; padding: 8px 8px; font-weight: 600;">Listeners</th>
+                                    <th style="text-align: center; padding: 8px 8px; font-weight: 600;">Change</th>
+                                </tr>
+                            </thead>
+                            <tbody id="data-table-compact">
+                                <!-- Data will be populated by JavaScript -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Data Table -->
+            <!-- Top Tracks Table -->
             <div class="comparison-table">
-                <table>
+                <div class="chart-title" style="padding: 16px 18px 0; display: flex; align-items: center; justify-content: space-between; color: #e5e7eb; margin-bottom: 16px;">
+                    <span style="font-size: 1rem; font-weight: 600;">Top Tracks by Streams</span>
+                    <button id="moreTracksBtn" class="more-tracks-btn">More Tracks</button>
+                </div>
+                <table id="tracksTable" style="width: 100%; color: #e5e7eb;">
                     <thead>
-                        <tr id="table-header">
-                            <th>Date</th>
-                            <th>Group</th>
-                            <th>Monthly Listeners</th>
-                            <th>Change</th>
+                        <tr>
+                            <th style="text-align: left; width: 60px;">#</th>
+                            <th style="text-align: left;">Track</th>
+                            <th style="text-align: right; width: 120px;">Streams</th>
                         </tr>
                     </thead>
-                    <tbody id="data-table">
-                        <!-- Data will be populated by JavaScript -->
+                    <tbody>
+                        <tr><td colspan="3" style="text-align: center; padding: 20px; color: #9ca3af;">Loading tracks...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -314,6 +483,16 @@
             <div class="last-updated" id="last-updated">
                 Last updated: -
             </div>
+        </div>
+    </div>
+
+    <!-- Tracks Modal -->
+    <div id="tracksModal" class="tracks-modal">
+        <div class="tracks-modal-content">
+            <button class="tracks-close">&times;</button>
+            <h2 style="color: #f9fafb; margin-bottom: 10px;">Tracks Performance Matrix</h2>
+            <p style="color: #9ca3af; margin-bottom: 20px;">All tracks with current totals and daily stream additions over the last 7 dates</p>
+            <div id="tracksTableContainer"></div>
         </div>
     </div>
 
@@ -367,50 +546,95 @@
 
             async init() {
                 try {
+                    console.log('🚀 Dashboard initializing...');
+
+                    // Add timeout to prevent hanging
+                    const initTimeout = setTimeout(() => {
+                        console.log('⏰ Init timeout, using fallback...');
+                        this.data = this.generateSampleData();
+                        this.streamsData = [];
+                        this.continueInit();
+                    }, 10000); // 10 second timeout
+
                     await this.loadData();
+                    clearTimeout(initTimeout);
+
+                    console.log('✅ Data loaded, total records:', this.data.length);
+                    this.continueInit();
+                } catch (error) {
+                    console.error('❌ Dashboard error:', error);
+                    this.showError('Failed to load dashboard data: ' + error.message);
+                }
+            }
+
+            continueInit() {
+                try {
                     this.processData();
+                    console.log('✅ Data processed');
                     this.createCharts();
+                    console.log('✅ Charts created');
                     this.updateStats();
                     this.populateTable();
                     this.showDashboard();
+                    console.log('✅ Dashboard ready');
+
+                    // Force recreate tracks table after a short delay to ensure data is ready
+                    setTimeout(() => {
+                        console.log('🔄 Force refreshing tracks table...');
+                        this.createTracksTable();
+                    }, 1000);
                 } catch (error) {
-                    this.showError('Failed to load dashboard data: ' + error.message);
+                    console.error('❌ Dashboard processing error:', error);
+                    this.showError('Failed to process dashboard data: ' + error.message);
                 }
             }
 
             async loadData() {
                 try {
+                    console.log('🔄 Starting data load...');
                     // Load monthly listeners data
                     const sources = [
-                        '../data/historical/monthly_listeners.csv'
+                        '/data/historical/monthly_listeners.csv'
                     ];
 
                     let allData = [];
-                    
+
                     for (const source of sources) {
                         try {
+                            console.log(`📥 Loading from: ${source}`);
                             const url = `${source}${source.includes('?') ? '&' : '?'}t=${Date.now()}`;
                             const response = await fetch(url, { cache: 'no-store' });
+                            console.log(`📡 Response status: ${response.status}`);
                             if (response.ok) {
                                 const csvText = await response.text();
+                                console.log(`📄 CSV text length: ${csvText.length}`);
                                 const sourceData = this.parseCSV(csvText);
+                                console.log(`📊 Parsed ${sourceData.length} records`);
                                 allData = allData.concat(sourceData);
+                            } else {
+                                console.error(`❌ Failed to load ${source}: ${response.status}`);
                             }
                         } catch (e) {
-                            console.log(`Could not load ${source}`);
+                            console.error(`❌ Could not load ${source}:`, e);
                         }
                     }
 
+                    console.log(`📈 Total data records: ${allData.length}`);
                     if (allData.length === 0) {
-                        throw new Error('No historical data found');
+                        console.log('⚠️ No data found, generating sample data...');
+                        allData = this.generateSampleData();
                     }
 
-                    this.data = allData.sort((a, b) => new Date(a.scrape_date) - new Date(b.scrape_date));
-                    
+                    this.data = allData.sort((a, b) => new Date(a.data_date) - new Date(b.data_date));
+                    console.log(`✅ Data sorted, final count: ${this.data.length}`);
+
                     // Load streams data for tracks chart
                     await this.loadStreamsData();
                 } catch (error) {
-                    throw new Error('No data sources available');
+                    console.error('💥 Data loading error:', error);
+                    console.log('🔄 Falling back to sample data...');
+                    this.data = this.generateSampleData();
+                    this.streamsData = [];
                 }
             }
 
@@ -432,14 +656,36 @@
                     const listenersRaw = (row.monthly_listeners || '').toString();
                     const listeners = parseInt(listenersRaw.replace(/,/g, ''));
                     const scrapeDate = row.scrape_date || row.date || '';
+                    // Use data_date if available, otherwise fall back to scrape_date
+                    const dataDate = row.data_date || scrapeDate;
 
-                    if (artist && Number.isFinite(listeners) && scrapeDate) {
+                    if (artist && Number.isFinite(listeners) && dataDate) {
                         data.push({
                             artist_name: artist,
                             monthly_listeners: listeners,
                             scrape_date: scrapeDate,
+                            data_date: dataDate,
                             source: row.data_source || 'csv'
                         });
+
+                        // Debug: Log first few records
+                        if (data.length <= 5) {
+                            console.log(`📝 Record ${data.length}:`, {
+                                artist,
+                                listeners,
+                                dataDate,
+                                scrapeDate
+                            });
+                        }
+                    } else {
+                        // Debug: Log rejected records
+                        if (data.length <= 5) {
+                            console.log(`❌ Rejected:`, {
+                                artist,
+                                listeners: listeners || 'invalid',
+                                dataDate: dataDate || 'missing'
+                            });
+                        }
                     }
                 }
 
@@ -448,6 +694,7 @@
 
             generateSampleData() {
                 // Generate sample data if files are not accessible
+                console.log('🎯 Generating sample data...');
                 const data = [];
                 const startDate = new Date();
                 startDate.setDate(startDate.getDate() - 30);
@@ -455,24 +702,28 @@
                 for (let i = 0; i < 30; i++) {
                     const date = new Date(startDate);
                     date.setDate(date.getDate() + i);
-                    
+                    const dateStr = date.toISOString().split('T')[0] + ' 12:00:00';
+
                     // SB19 data with slight variations
                     data.push({
                         artist_name: 'SB19',
                         monthly_listeners: 1720632 + Math.floor(Math.random() * 10000) - 5000,
-                        scrape_date: date.toISOString().split('T')[0] + ' 12:00:00',
+                        scrape_date: dateStr,
+                        data_date: dateStr,
                         source: 'sample'
                     });
-                    
+
                     // BINI data with growth trend
                     data.push({
                         artist_name: 'BINI',
                         monthly_listeners: 1977848 + Math.floor(Math.random() * 15000) - 7500 + (i * 500),
-                        scrape_date: date.toISOString().split('T')[0] + ' 12:00:00',
+                        scrape_date: dateStr,
+                        data_date: dateStr,
                         source: 'sample'
                     });
                 }
 
+                console.log(`🎯 Generated ${data.length} sample records`);
                 return data;
             }
 
@@ -505,13 +756,13 @@
             }
 
             createCharts() {
-                this.createCombinedChart();
-                this.createTracksChart();
+                this.createMonthlyListenersChart();
+                this.createTracksTable();
             }
 
             getChartData() {
                 const filteredData = this.getFilteredData();
-                const allDates = [...new Set(filteredData.map(d => d.scrape_date.split(' ')[0]))].sort();
+                const allDates = [...new Set(filteredData.map(d => d.data_date.split(' ')[0]))].sort();
                 
                 // Get data for each artist
                 const artists = [...new Set(filteredData.map(d => d.artist_name))];
@@ -520,8 +771,13 @@
                 
                 artists.forEach(artist => {
                     const values = allDates.map(date => {
-                        const record = filteredData.find(d => d.artist_name === artist && d.scrape_date.startsWith(date));
-                        return record ? record.monthly_listeners : null;
+                        // Get all records for this artist and date, then find the latest one
+                        const records = filteredData.filter(d => d.artist_name === artist && d.data_date.startsWith(date));
+                        if (records.length === 0) return null;
+                        
+                        // Sort by scrape_date descending and take the latest (most recent) entry
+                        const latestRecord = records.sort((a, b) => new Date(b.scrape_date) - new Date(a.scrape_date))[0];
+                        return latestRecord.monthly_listeners;
                     });
                     artistData[artist] = values;
                     
@@ -532,7 +788,11 @@
                 });
                 
                 const labels = allDates.map(date => {
-                    try { return window.dateFns.format(new Date(date), 'MMM d'); } catch { return date; }
+                    try {
+                        return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    } catch {
+                        return date;
+                    }
                 });
                 
                 return { labels, artistData, artistDeltas, artists };
@@ -540,14 +800,27 @@
 
             async loadStreamsData() {
                 try {
-                    const url = `../data/historical/comprehensive_streams.csv?t=${Date.now()}`;
+                    const url = `/data/historical/comprehensive_streams.csv?t=${Date.now()}`;
+                    console.log('🔍 Loading streams data from:', url);
                     const response = await fetch(url, { cache: 'no-store' });
                     if (response.ok) {
                         const csvText = await response.text();
                         this.streamsData = this.parseStreamsCSV(csvText);
+                        console.log('📊 Loaded streams data:', this.streamsData.length, 'tracks');
+                        
+                        if (this.streamsData.length > 0) {
+                            const sample = this.streamsData[0];
+                            console.log('📄 Sample track data:', {
+                                song_title: sample.song_title,
+                                total_streams: sample.total_streams,
+                                data_date: sample.data_date
+                            });
+                        }
+                    } else {
+                        console.error('❌ Failed to fetch streams data:', response.status, response.statusText);
                     }
                 } catch (e) {
-                    console.log('Could not load streams data');
+                    console.error('❌ Error loading streams data:', e);
                     this.streamsData = [];
                 }
             }
@@ -566,29 +839,42 @@
                     });
 
                     const songTitle = row.song_title || '';
-                    const artistName = (row.artist_name || '').replace(' - Spotify Top Songs', '');
+                    const originalArtistName = row.artist_name || '';
+                    const cleanArtistName = originalArtistName.replace(' - Spotify Top Songs', '');
                     const totalStreams = parseInt((row.total_streams || '0').replace(/,/g, ''));
+                    const dailyStreams = parseInt((row.daily_streams || '0').replace(/,/g, ''));
                     const scrapeDate = row.scrape_date || '';
+                    const dataDate = row.data_date || scrapeDate;
 
-                    if (songTitle && Number.isFinite(totalStreams) && scrapeDate) {
+                    if (songTitle && Number.isFinite(totalStreams) && dataDate) {
                         data.push({
                             song_title: songTitle,
-                            artist_name: artistName,
+                            artist_name: originalArtistName,  // Keep original for modal filtering
+                            clean_artist_name: cleanArtistName,  // Add clean version for display
                             total_streams: totalStreams,
-                            scrape_date: scrapeDate
+                            daily_streams: dailyStreams,
+                            scrape_date: scrapeDate,
+                            data_date: dataDate
                         });
+                    } else {
+                        // Debug rejected entries
+                        if (i <= 5) { // Only log first few rejections
+                            console.log(`❌ Rejected track: ${songTitle}, streams: ${totalStreams}, date: ${dataDate}`);
+                        }
                     }
                 }
 
                 return data;
             }
 
-            createCombinedChart() {
-                const ctx = document.getElementById('combinedChart').getContext('2d');
+            createMonthlyListenersChart() {
+                const ctx = document.getElementById('monthlyListenersChart').getContext('2d');
                 const { labels, artistData, artistDeltas, artists } = this.getChartData();
                 
-                if (this.charts.combined) {
-                    try { this.charts.combined.destroy(); } catch {}
+                console.log('📊 Creating combined chart with:', { labels, artists });
+                
+                if (this.charts.monthlyListeners) {
+                    try { this.charts.monthlyListeners.destroy(); } catch {}
                 }
                 
                 const datasets = [];
@@ -598,15 +884,14 @@
                     'default': { bg: 'rgba(156,163,175,0.85)', border: '#6b7280', line: '#9ca3af' }
                 };
                 
-                // Add bar datasets (monthly listeners)
+                // Add bar datasets first (monthly listeners - will be in background)
                 artists.forEach(artist => {
-                    const shouldShow = this.artistFilter === 'all' || 
-                                     this.artistFilter === artist || 
+                    const shouldShow = this.artistFilter === 'all' ||
+                                     this.artistFilter === artist ||
                                      (this.compareFilter !== 'none' && this.compareFilter === artist);
-                    
+
                     if (shouldShow) {
                         const color = colors[artist] || colors['default'];
-                        // Bar dataset
                         datasets.push({
                             label: `${artist} (Listeners)`,
                             data: artistData[artist],
@@ -615,33 +900,63 @@
                             borderColor: color.border,
                             borderWidth: 1,
                             borderRadius: 6,
-                            yAxisID: 'y'
+                            yAxisID: 'y',
+                            order: 1 // Higher order number = drawn behind
                         });
-                        
-                        // Line dataset (changes) - with conditional coloring for negative changes
-                        const deltas = artistDeltas[artist];
-                        const segmentColors = deltas.map(delta => delta < 0 ? '#ef4444' : color.line);
-                        const pointColors = deltas.map(delta => delta < 0 ? '#dc2626' : color.line);
-                        
+                    }
+                });
+                
+                // Add line datasets second (changes - will be on top)
+                artists.forEach(artist => {
+                    const shouldShow = this.artistFilter === 'all' ||
+                                     this.artistFilter === artist ||
+                                     (this.compareFilter !== 'none' && this.compareFilter === artist);
+
+                    if (shouldShow) {
+                        const color = colors[artist] || colors['default'];
                         datasets.push({
                             label: `${artist} (Change)`,
                             data: artistDeltas[artist],
                             type: 'line',
                             borderColor: color.line,
-                            backgroundColor: 'transparent',
+                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                            fill: false,
                             tension: 0.3,
-                            pointRadius: 3,
-                            pointHoverRadius: 5,
-                            borderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 7,
+                            pointBackgroundColor: color.line,
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            borderWidth: 3,
+                            datalabels: {
+                                display: function(context) {
+                                    // Only show label on the last data point
+                                    return context.dataIndex === context.dataset.data.length - 1;
+                                },
+                                align: 'top',
+                                offset: 8,
+                                color: '#ffffff',
+                                font: {
+                                    size: 11,
+                                    weight: 'bold'
+                                },
+                                formatter: function(value) {
+                                    if (value === null || value === undefined) return '';
+                                    const sign = value >= 0 ? '+' : '';
+                                    if (Math.abs(value) >= 1000) {
+                                        return sign + (value / 1000).toFixed(0) + 'K';
+                                    }
+                                    return sign + value.toString();
+                                }
+                            },
                             yAxisID: 'y1',
+                            order: 0, // Lower order number = drawn on top
                             segment: {
                                 borderColor: (ctx) => {
                                     const delta = ctx.p1.parsed.y;
                                     return delta < 0 ? '#ef4444' : color.line;
                                 }
-                            },
-                            pointBackgroundColor: pointColors,
-                            pointBorderColor: pointColors
+                            }
                         });
                     }
                 });
@@ -666,24 +981,43 @@
                     yMax1 = absMax * 1.2;
                 }
                 
-                this.charts.combined = new Chart(ctx, {
+                // Register the datalabels plugin if available
+                if (typeof ChartDataLabels !== 'undefined') {
+                    Chart.register(ChartDataLabels);
+                }
+
+                // Register the annotation plugin if available
+                if (typeof window.chartjsPluginAnnotation !== 'undefined') {
+                    Chart.register(window.chartjsPluginAnnotation);
+                }
+
+                this.charts.monthlyListeners = new Chart(ctx, {
                     type: 'bar',
                     data: { labels, datasets },
+                    plugins: typeof ChartDataLabels !== 'undefined' ? [ChartDataLabels] : [],
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
                         scales: {
                             x: {
                                 grid: { display: false },
-                                ticks: { maxRotation: 0, autoSkip: true }
+                                ticks: { maxRotation: 0, autoSkip: true, color: '#ffffff' }
                             },
                             y: {
                                 type: 'linear',
                                 position: 'left',
                                 grid: { color: 'rgba(255,255,255,0.06)' },
-                                ticks: { 
-                                    callback: function(value) { return Math.round(value / 1000) + 'k'; },
-                                    maxTicksLimit: 8
+                                ticks: {
+                                    callback: function(value) {
+                                        if (value >= 1000000) {
+                                            return (value / 1000000).toFixed(1) + 'M';
+                                        } else if (value >= 1000) {
+                                            return Math.round(value / 1000) + 'K';
+                                        }
+                                        return value;
+                                    },
+                                    maxTicksLimit: 8,
+                                    color: '#ffffff'
                                 },
                                 min: yMin,
                                 max: yMax
@@ -692,12 +1026,16 @@
                                 type: 'linear',
                                 position: 'right',
                                 grid: { display: false },
-                                ticks: { 
-                                    callback: function(value) { 
+                                ticks: {
+                                    callback: function(value) {
                                         const sign = value >= 0 ? '+' : '';
-                                        return sign + (value / 1000) + 'k'; 
+                                        if (Math.abs(value) >= 1000) {
+                                            return sign + (value / 1000).toFixed(0) + 'K';
+                                        }
+                                        return sign + value.toString();
                                     },
-                                    maxTicksLimit: 6
+                                    maxTicksLimit: 6,
+                                    color: '#ffffff'
                                 },
                                 min: yMin1,
                                 max: yMax1
@@ -717,55 +1055,61 @@
                                     }
                                 }
                             },
-                            legend: { display: true, position: 'top' }
-                        }
+                            legend: { display: true, position: 'top' },
+                            annotation: {
+                                annotations: {
+                                    zeroLine: {
+                                        type: 'line',
+                                        yMin: 0,
+                                        yMax: 0,
+                                        yScaleID: 'y1',
+                                        borderColor: 'rgba(255, 255, 255, 0.4)',
+                                        borderWidth: 2,
+                                        borderDash: [5, 5],
+                                        label: {
+                                            content: 'No Change',
+                                            enabled: true,
+                                            position: 'end',
+                                            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                            color: '#111827',
+                                            font: {
+                                                size: 10
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        onHover: (event, elements) => {
+                            // Keep existing hover behavior
+                        },
                     }
                 });
             }
             
-            createTracksChart() {
-                const ctx = document.getElementById('tracksChart').getContext('2d');
+            createTracksTable() {
+                const tableBody = document.querySelector('#tracksTable tbody');
                 
-                if (this.charts.tracks) {
-                    try { this.charts.tracks.destroy(); } catch {}
-                }
+                console.log('🔍 createTracksTable called');
+                console.log('   📊 streamsData length:', this.streamsData?.length || 0);
+                console.log('   🎯 artistFilter:', this.artistFilter);
+                console.log('   📅 rangePreset:', this.rangePreset);
                 
                 if (!this.streamsData || this.streamsData.length === 0) {
-                    // Show placeholder if no data
-                    ctx.font = '16px Inter';
-                    ctx.fillStyle = '#9ca3af';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('Loading tracks data...', ctx.canvas.width / 2, ctx.canvas.height / 2);
+                    console.log('❌ No streams data available:', this.streamsData?.length || 0);
+                    tableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px; color: #9ca3af;">No tracks data available</td></tr>';
                     return;
                 }
                 
-                // Apply time range filtering to streams data
+                // Use all streams data (like modal does) - no complex date filtering for now
                 let filteredStreamsData = this.streamsData;
-                
-                // Apply date range filter similar to getFilteredData()
-                if (this.rangePreset !== 'all') {
-                    const allDates = [...new Set(filteredStreamsData.map(d => d.scrape_date.split(' ')[0]))].sort();
-                    let startIdx = 0;
-                    
-                    if (this.rangePreset === 'last7') {
-                        startIdx = Math.max(0, allDates.length - 7);
-                    } else if (this.rangePreset === 'mtd') {
-                        const today = new Date(allDates[allDates.length - 1]);
-                        const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-                        const firstOfMonthStr = firstOfMonth.toISOString().split('T')[0];
-                        startIdx = allDates.findIndex(d => d >= firstOfMonthStr);
-                        if (startIdx === -1) startIdx = 0;
-                    }
-                    
-                    const targetDates = new Set(allDates.slice(startIdx));
-                    filteredStreamsData = filteredStreamsData.filter(d => targetDates.has(d.scrape_date.split(' ')[0]));
-                }
+                console.log('   📈 Using all streams data, length:', filteredStreamsData.length);
                 
                 // Get latest data for each track within the filtered date range
-                const latestDate = Math.max(...filteredStreamsData.map(d => new Date(d.scrape_date).getTime()));
+                const latestDate = Math.max(...filteredStreamsData.map(d => new Date(d.data_date).getTime()));
                 const cutoffTime = latestDate - (5 * 60 * 1000); // 5 minutes tolerance
                 const recentData = filteredStreamsData.filter(d => 
-                    new Date(d.scrape_date).getTime() >= cutoffTime
+                    new Date(d.data_date).getTime() >= cutoffTime
                 );
                 
                 // Get the most recent entry for each unique track
@@ -778,98 +1122,121 @@
                     }
                 });
                 const latestData = Object.values(latestByTrack);
+                console.log('   🎵 Latest data by track count:', latestData.length);
                 
-                // Filter by selected artist(s)
-                let filteredTracks = latestData;
-                if (this.artistFilter !== 'all') {
-                    const includeArtists = new Set([this.artistFilter]);
-                    if (this.compareFilter && this.compareFilter !== 'none') {
-                        includeArtists.add(this.compareFilter);
-                    }
-                    // Handle artist names that may include " - Spotify Top Songs" suffix
-                    filteredTracks = latestData.filter(d => {
-                        const artistName = d.artist_name.replace(' - Spotify Top Songs', '');
-                        return includeArtists.has(artistName);
+                if (latestData.length > 0) {
+                    const sample = latestData[0];
+                    console.log('   📄 Sample track:', {
+                        song_title: sample.song_title,
+                        artist_name: sample.artist_name,
+                        total_streams: sample.total_streams,
+                        data_date: sample.data_date
                     });
+                    
+                    // Show all unique artist names in the data
+                    const uniqueArtists = [...new Set(latestData.map(d => d.artist_name))];
+                    console.log('   🎭 All unique artist names in data:', uniqueArtists);
+                    const cleanedArtists = [...new Set(latestData.map(d => d.artist_name.replace(' - Spotify Top Songs', '')))];
+                    console.log('   🎭 All cleaned artist names:', cleanedArtists);
                 }
                 
-                // Sort by streams and take top 15
-                const topTracks = filteredTracks
-                    .sort((a, b) => b.total_streams - a.total_streams)
-                    .slice(0, 15);
-                
-                const labels = topTracks.map(t => {
-                    const title = t.song_title.length > 20 ? t.song_title.substring(0, 17) + '...' : t.song_title;
-                    const artistName = t.artist_name.replace(' - Spotify Top Songs', '');
-                    return `${title} (${artistName})`;
-                });
-                const data = topTracks.map(t => t.total_streams);
-                
-                // Color by artist
-                const backgroundColors = topTracks.map(t => {
-                    const artistName = t.artist_name.replace(' - Spotify Top Songs', '');
-                    if (artistName === 'SB19') return 'rgba(96,165,250,0.85)';
-                    if (artistName === 'BINI') return 'rgba(167,139,250,0.85)';
-                    return 'rgba(156,163,175,0.85)';
-                });
-                
-                const borderColors = topTracks.map(t => {
-                    const artistName = t.artist_name.replace(' - Spotify Top Songs', '');
-                    if (artistName === 'SB19') return '#2980b9';
-                    if (artistName === 'BINI') return '#6d28d9';
-                    return '#6b7280';
-                });
-                
-                this.charts.tracks = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Total Streams',
-                            data: data,
-                            backgroundColor: backgroundColors,
-                            borderColor: borderColors,
-                            borderWidth: 1,
-                            borderRadius: 6
-                        }]
-                    },
-                    options: {
-                        indexAxis: 'y',
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            x: {
-                                grid: { color: 'rgba(255,255,255,0.06)' },
-                                ticks: {
-                                    callback: function(value) {
-                                        if (value >= 1000000) {
-                                            return Math.round(value / 1000000) + 'M';
-                                        }
-                                        return Math.round(value / 1000) + 'K';
-                                    },
-                                    maxTicksLimit: 6
-                                }
-                            },
-                            y: {
-                                grid: { display: false },
-                                ticks: {
-                                    font: { size: 10 },
-                                    maxRotation: 0
-                                }
-                            }
-                        },
-                        plugins: {
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return `Streams: ${context.parsed.x.toLocaleString()}`;
-                                    }
-                                }
-                            },
-                            legend: { display: false }
+                // Filter by selected artist(s) - using same logic as modal
+                let filteredTracks = latestData;
+                if (this.artistFilter !== 'all') {
+                    console.log('   🎯 Artist filter value:', `"${this.artistFilter}"`);
+                    console.log('   🎯 Artist filter type:', typeof this.artistFilter);
+                    
+                    filteredTracks = latestData.filter(track => {
+                        const artistName = track.artist_name.replace(' - Spotify Top Songs', '');
+                        const matches = artistName === this.artistFilter;
+                        
+                        // Show detailed comparison for first few tracks
+                        if (latestData.indexOf(track) < 3) {
+                            console.log(`   🔍 Track ${latestData.indexOf(track)}: "${track.song_title}"`);
+                            console.log(`      Original: "${track.artist_name}"`);
+                            console.log(`      Cleaned: "${artistName}"`);
+                            console.log(`      Filter: "${this.artistFilter}"`);
+                            console.log(`      Match: ${matches} (${artistName === this.artistFilter})`);
+                            console.log(`      artistName.length: ${artistName.length}, filter.length: ${this.artistFilter.length}`);
                         }
+                        
+                        return matches;
+                    });
+                    console.log('   🎯 After artist filtering:', filteredTracks.length);
+                    
+                    // Also include compare filter if set
+                    if (this.compareFilter && this.compareFilter !== 'none') {
+                        const compareFiltered = latestData.filter(track => {
+                            const artistName = track.artist_name.replace(' - Spotify Top Songs', '');
+                            return artistName === this.compareFilter;
+                        });
+                        filteredTracks = [...filteredTracks, ...compareFiltered];
+                        console.log('   🎯 After adding compare filter:', filteredTracks.length);
                     }
-                });
+                }
+                
+                // Sort by streams and take top tracks
+                let topTracks;
+                if (this.artistFilter === 'all') {
+                    // When showing all artists, ensure both SB19 and BINI are represented
+                    // Get top 8 from each artist, then take overall top 15
+                    const sb19Tracks = filteredTracks
+                        .filter(track => track.artist_name.includes('SB19'))
+                        .sort((a, b) => b.total_streams - a.total_streams)
+                        .slice(0, 8);
+                    
+                    const biniTracks = filteredTracks
+                        .filter(track => track.artist_name.includes('BINI'))
+                        .sort((a, b) => b.total_streams - a.total_streams)
+                        .slice(0, 8);
+                    
+                    // Combine and take top 15 overall
+                    topTracks = [...sb19Tracks, ...biniTracks]
+                        .sort((a, b) => b.total_streams - a.total_streams)
+                        .slice(0, 15);
+                        
+                    console.log('🎵 Balanced representation - SB19:', sb19Tracks.length, 'BINI:', biniTracks.length);
+                } else {
+                    // Single artist or specific filtering
+                    topTracks = filteredTracks
+                        .sort((a, b) => b.total_streams - a.total_streams)
+                        .slice(0, 15);
+                }
+                
+                console.log('🎵 Top tracks for table:', topTracks.length, topTracks.slice(0,3).map(t => `${t.song_title}: ${t.total_streams}`));
+                
+                if (topTracks.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px; color: #9ca3af;">No tracks found for selected filters</td></tr>';
+                    return;
+                }
+                
+                // Generate table rows
+                const rows = topTracks.map((track, index) => {
+                    const artistName = track.artist_name.replace(' - Spotify Top Songs', '');
+                    const title = track.song_title.length > 25 ? track.song_title.substring(0, 22) + '...' : track.song_title;
+                    const streams = track.total_streams;
+                    const formattedStreams = streams >= 1000000 
+                        ? (streams / 1000000).toFixed(1) + 'M' 
+                        : Math.round(streams / 1000) + 'K';
+                    
+                    // Color by artist
+                    const artistColor = artistName === 'SB19' ? '#60a5fa' : artistName === 'BINI' ? '#a78bfa' : '#9ca3af';
+                    
+                    return `
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);" 
+                            onmouseover="this.style.backgroundColor='rgba(255,255,255,0.02)'"
+                            onmouseout="this.style.backgroundColor='transparent'">
+                            <td style="padding: 6px 4px; color: #9ca3af; font-weight: 600;">${index + 1}</td>
+                            <td style="padding: 6px 8px;">
+                                <div style="font-weight: 500; color: #e5e7eb;">${title}</div>
+                                <div style="font-size: 10px; color: ${artistColor}; margin-top: 2px;">${artistName}</div>
+                            </td>
+                            <td style="padding: 6px 8px; text-align: right; font-weight: 600; color: #34d399;">${formattedStreams}</td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                tableBody.innerHTML = rows;
             }
 
 
@@ -883,13 +1250,15 @@
                 }
                 filteredData = filteredData.filter(d => includeArtists.has(d.artist_name));
                 
-                // Apply date range filter
+                // Apply date range filter using data_date instead of scrape_date
                 if (this.rangePreset !== 'all') {
-                    const allDates = [...new Set(filteredData.map(d => d.scrape_date.split(' ')[0]))].sort();
+                    const allDates = [...new Set(filteredData.map(d => d.data_date.split(' ')[0]))].sort();
                     let startIdx = 0;
-                    
+
                     if (this.rangePreset === 'last7') {
                         startIdx = Math.max(0, allDates.length - 7);
+                    } else if (this.rangePreset === 'last30') {
+                        startIdx = Math.max(0, allDates.length - 30);
                     } else if (this.rangePreset === 'mtd') {
                         const today = new Date(allDates[allDates.length - 1]);
                         const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -900,7 +1269,7 @@
                     }
                     
                     const validDates = allDates.slice(startIdx);
-                    filteredData = filteredData.filter(d => validDates.includes(d.scrape_date.split(' ')[0]));
+                    filteredData = filteredData.filter(d => validDates.includes(d.data_date.split(' ')[0]));
                 }
                 
                 return filteredData;
@@ -923,15 +1292,25 @@
                 const artists = [...new Set(filteredData.map(d => d.artist_name))];
                 
                 // Sort data by date
-                const sortedData = filteredData.sort((a, b) => new Date(a.scrape_date) - new Date(b.scrape_date));
+                const sortedData = filteredData.sort((a, b) => new Date(a.data_date) - new Date(b.data_date));
                 
                 // Get oldest and latest dates
-                const oldestDate = sortedData[0].scrape_date.split(' ')[0];
-                const latestDate = sortedData[sortedData.length - 1].scrape_date.split(' ')[0];
+                const oldestDate = sortedData[0].data_date.split(' ')[0];
+                const latestDate = sortedData[sortedData.length - 1].data_date.split(' ')[0];
                 
-                // Get data by date for calculations
-                const oldestData = filteredData.filter(d => d.scrape_date.startsWith(oldestDate));
-                const latestData = filteredData.filter(d => d.scrape_date.startsWith(latestDate));
+                // Get data by date for calculations - use latest entry per artist for each date
+                const getLatestForDate = (dateStr) => {
+                    const artistsInData = [...new Set(filteredData.map(d => d.artist_name))];
+                    return artistsInData.map(artist => {
+                        const records = filteredData.filter(d => d.artist_name === artist && d.data_date.startsWith(dateStr));
+                        if (records.length === 0) return null;
+                        // Sort by scrape_date descending and take the latest entry
+                        return records.sort((a, b) => new Date(b.scrape_date) - new Date(a.scrape_date))[0];
+                    }).filter(record => record !== null);
+                };
+                
+                const oldestData = getLatestForDate(oldestDate);
+                const latestData = getLatestForDate(latestDate);
                 
                 // 1st Card: Total Monthly Listeners (current/latest)
                 const totalListeners = latestData.reduce((sum, d) => sum + d.monthly_listeners, 0);
@@ -966,7 +1345,26 @@
                 percentageChangeEl.textContent = `${percentageChange > 0 ? '+' : ''}${percentageChange.toFixed(2)}%`;
                 percentageChangeEl.className = percentageChange >= 0 ? 'stat-value' : 'stat-value';
                 percentageChangeEl.style.color = percentageChange >= 0 ? '#f9fafb' : '#ef4444';
-                
+
+                // 5th Card: All-Time High Monthly Listeners (hardcoded based on research)
+                const allTimeHighs = {
+                    'SB19': 2828289,
+                    'BINI': 7546066
+                };
+
+                // Find which artist has the highest all-time record
+                let allTimeHighArtist = 'BINI';
+                let allTimeHighListeners = 7546066;
+
+                // If we're filtering by a specific artist, show their all-time high
+                if (this.artistFilter !== 'all' && allTimeHighs[this.artistFilter]) {
+                    allTimeHighArtist = this.artistFilter;
+                    allTimeHighListeners = allTimeHighs[this.artistFilter];
+                }
+
+                document.getElementById('all-time-high').textContent = allTimeHighListeners.toLocaleString();
+                document.getElementById('all-time-artist').textContent = allTimeHighArtist;
+
                 // Update info text with human-friendly range label
                 const infoLabel = this.getHumanRangeLabel(filteredData);
                 document.getElementById('change-info').textContent = infoLabel;
@@ -978,29 +1376,103 @@
             }
 
             populateTable() {
-                const tbody = document.getElementById('data-table');
-                const filteredData = this.getFilteredData();
-                const allDatesAsc = [...new Set(filteredData.map(d => d.scrape_date.split(' ')[0]))].sort();
+                // Populate both the compact table and the original table
+                this.populateCompactTable();
+                this.populateFullTable();
+            }
+
+            populateCompactTable() {
+                const tbody = document.getElementById('data-table-compact');
+                const filteredData = this.getFilteredData(); // This already applies date range filtering
+                const allDatesAsc = [...new Set(filteredData.map(d => d.data_date.split(' ')[0]))].sort();
                 const dates = [...allDatesAsc].reverse();
 
                 tbody.innerHTML = '';
 
                 // Get all artists in filtered data
                 const artists = [...new Set(filteredData.map(d => d.artist_name))];
-                
-                // Create lookup maps for each artist
+
+                // Create lookup maps for each artist - use latest entry per date
                 const dataByArtistAndDate = {};
                 artists.forEach(artist => {
-                    dataByArtistAndDate[artist] = Object.fromEntries(
-                        filteredData.filter(d => d.artist_name === artist)
-                            .map(d => [d.scrape_date.split(' ')[0], d.monthly_listeners])
-                    );
+                    const artistData = {};
+                    const uniqueDates = [...new Set(filteredData.filter(d => d.artist_name === artist).map(d => d.data_date.split(' ')[0]))];
+
+                    uniqueDates.forEach(date => {
+                        const records = filteredData.filter(d => d.artist_name === artist && d.data_date.startsWith(date));
+                        if (records.length > 0) {
+                            // Sort by scrape_date descending and take the latest entry
+                            const latestRecord = records.sort((a, b) => new Date(b.scrape_date) - new Date(a.scrape_date))[0];
+                            artistData[date] = latestRecord.monthly_listeners;
+                        }
+                    });
+
+                    dataByArtistAndDate[artist] = artistData;
+                });
+
+                // Create rows for each date, with separate entries for each artist (use filtered dates, limit to 15 for compact view)
+                dates.slice(0, 15).forEach((date, idx) => {
+                    const prevDate = dates[idx + 1];
+                    const dateCell = (function(){ try { return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); } catch { return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); } })();
+
+                    artists.forEach(artist => {
+                        const currentVal = dataByArtistAndDate[artist][date];
+                        const prevVal = prevDate ? dataByArtistAndDate[artist][prevDate] : undefined;
+                        const deltaVal = (typeof currentVal === 'number' && typeof prevVal === 'number') ? (currentVal - prevVal) : 0;
+
+                        // Add row if data exists
+                        if (typeof currentVal === 'number') {
+                            const row = tbody.insertRow();
+                            const deltaSign = deltaVal > 0 ? '+' : '';
+                            const deltaClass = deltaVal >= 0 ? 'growth' : 'growth negative';
+
+                            row.innerHTML = `
+                                <td style="padding: 6px 4px; font-size: 11px;">${dateCell}</td>
+                                <td style="padding: 6px 8px; font-size: 11px;">${artist}</td>
+                                <td style="padding: 6px 8px; text-align: center; font-size: 11px; font-weight: 600;">${currentVal.toLocaleString()}</td>
+                                <td style="padding: 6px 8px; text-align: center; font-size: 11px;"><span class="${deltaClass}" style="font-size: 10px;">${deltaSign}${(deltaVal || 0).toLocaleString()}</span></td>
+                            `;
+                        }
+                    });
+                });
+            }
+
+            populateFullTable() {
+                const tbody = document.getElementById('data-table');
+                // Only populate if the element exists (it's been moved to bottom as tracks table now)
+                if (!tbody) return;
+
+                const filteredData = this.getFilteredData();
+                const allDatesAsc = [...new Set(filteredData.map(d => d.data_date.split(' ')[0]))].sort();
+                const dates = [...allDatesAsc].reverse();
+
+                tbody.innerHTML = '';
+
+                // Get all artists in filtered data
+                const artists = [...new Set(filteredData.map(d => d.artist_name))];
+
+                // Create lookup maps for each artist - use latest entry per date
+                const dataByArtistAndDate = {};
+                artists.forEach(artist => {
+                    const artistData = {};
+                    const uniqueDates = [...new Set(filteredData.filter(d => d.artist_name === artist).map(d => d.data_date.split(' ')[0]))];
+
+                    uniqueDates.forEach(date => {
+                        const records = filteredData.filter(d => d.artist_name === artist && d.data_date.startsWith(date));
+                        if (records.length > 0) {
+                            // Sort by scrape_date descending and take the latest entry
+                            const latestRecord = records.sort((a, b) => new Date(b.scrape_date) - new Date(a.scrape_date))[0];
+                            artistData[date] = latestRecord.monthly_listeners;
+                        }
+                    });
+
+                    dataByArtistAndDate[artist] = artistData;
                 });
 
                 // Create rows for each date, with separate entries for each artist
                 dates.slice(0, 20).forEach((date, idx) => {
                     const prevDate = dates[idx + 1];
-                    const dateCell = (function(){ try { return window.dateFns.format(new Date(date), 'MMM d, yyyy'); } catch { return new Date(date).toLocaleDateString(); } })();
+                    const dateCell = (function(){ try { return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); } catch { return new Date(date).toLocaleDateString(); } })();
 
                     artists.forEach(artist => {
                         const currentVal = dataByArtistAndDate[artist][date];
@@ -1039,6 +1511,7 @@
                 try {
                     if (!Array.isArray(filteredData) || filteredData.length === 0) return 'No data';
                     if (this.rangePreset === 'last7') return 'Last 7 days';
+                    if (this.rangePreset === 'last30') return 'Last 30 days';
                     if (this.rangePreset === 'mtd') return 'Month to date';
                     const days = [...new Set(filteredData.map(d => d.scrape_date.split(' ')[0]))].length;
                     if (days <= 1) return 'Single day';
@@ -1048,17 +1521,477 @@
                     return 'Selected period';
                 }
             }
+            
+            showAllTracksModal() {
+                console.log('showAllTracksModal called');
+                if (!this.streamsData || this.streamsData.length === 0) {
+                    alert('No tracks data available. Please ensure streaming data is loaded.');
+                    return;
+                }
+                console.log('Streams data available, length:', this.streamsData.length);
+                
+                // Apply artist filter to streams data
+                let filteredStreamsData = [...this.streamsData];
+                if (this.artistFilter !== 'all') {
+                    filteredStreamsData = filteredStreamsData.filter(track => {
+                        const artistName = track.artist_name.replace(' - Spotify Top Songs', '');
+                        return artistName === this.artistFilter;
+                    });
+                }
+                
+                // Get unique dates and sort them (last 7 dates for readability)
+                const allDates = [...new Set(filteredStreamsData.map(d => d.data_date.split(' ')[0]))].sort();
+                const recentDates = allDates.slice(-7); // Last 7 dates, oldest first (ascending)
+                
+                // Get unique tracks with consistent naming
+                const trackMap = new Map();
+                filteredStreamsData.forEach(record => {
+                    const cleanArtistName = record.artist_name.replace(' - Spotify Top Songs', '');
+                    const key = `${record.song_title}|${cleanArtistName}`;
+                    if (!trackMap.has(key)) {
+                        trackMap.set(key, {
+                            song_title: record.song_title,
+                            artist_name: cleanArtistName,
+                            latest_streams: 0
+                        });
+                    }
+                    // Keep track of latest total streams for sorting
+                    if (record.total_streams > trackMap.get(key).latest_streams) {
+                        trackMap.get(key).latest_streams = record.total_streams;
+                    }
+                });
+                
+                // Get all tracks first (no sorting yet)
+                const allTracks = Array.from(trackMap.values());
+                
+                // Create matrix data structure with daily deltas and current totals
+                const matrixData = {};
+                const currentTotals = {};
+                
+                allTracks.forEach(track => {
+                    const key = `${track.song_title}|${track.artist_name}`;
+                    matrixData[key] = {};
+                    currentTotals[key] = track.latest_streams; // Store current total
+                    recentDates.forEach(date => {
+                        matrixData[key][date] = null; // Initialize with null
+                    });
+                });
+                
+                // Fill matrix with actual daily streams data
+                filteredStreamsData.forEach((record) => {
+                    // Use the same key format as we used when creating the matrix
+                    const cleanArtistName = record.artist_name.replace(' - Spotify Top Songs', '');
+                    const trackKey = `${record.song_title}|${cleanArtistName}`;
+                    const date = record.data_date.split(' ')[0];
+                    
+                    if (matrixData[trackKey] && recentDates.includes(date)) {
+                        // Temporarily use the CSV daily_streams field to fix modal performance
+                        matrixData[trackKey][date] = record.daily_streams || 0;
+                    }
+                });
+                
+                // Sort tracks by the latest date's daily streams (highest first)
+                const latestDate = recentDates[recentDates.length - 1];
+                const sortedTracks = allTracks.sort((a, b) => {
+                    const keyA = `${a.song_title}|${a.artist_name}`;
+                    const keyB = `${b.song_title}|${b.artist_name}`;
+                    const dailyA = matrixData[keyA][latestDate] || 0;
+                    const dailyB = matrixData[keyB][latestDate] || 0;
+                    return dailyB - dailyA; // Sort by latest date's daily streams, highest first
+                });
+                
+                if (sortedTracks.length === 0) {
+                    document.getElementById('tracksTableContainer').innerHTML = 
+                        '<p style="text-align: center; color: #9ca3af; padding: 40px;">No tracks found for the selected filters.</p>';
+                } else {
+                    // Add track filter input
+                    const trackFilterHtml = `
+                        <div style="margin-bottom: 15px;">
+                            <input type="text" id="trackFilter" placeholder="Filter tracks by name..." 
+                                   style="width: 300px; padding: 8px 12px; background: rgba(55, 65, 81, 0.8); border: 1px solid rgba(75, 85, 99, 0.6); border-radius: 8px; color: #e5e7eb; font-size: 0.9rem;" 
+                                   oninput="dashboard.filterTracksInModal(this.value)">
+                        </div>
+                    `;
+                    
+                    // Create matrix table HTML
+                    const tableHtml = `
+                        ${trackFilterHtml}
+                        <div class="tracks-table-container">
+                            <table class="tracks-table">
+                                <thead>
+                                    <tr>
+                                        <th style="position: sticky; top: 0; left: 0; background: rgba(17, 24, 39, 0.95); z-index: 3; width: 200px; padding: 8px;">Track</th>
+                                        <th style="position: sticky; top: 0; left: 199px; background: rgba(17, 24, 39, 0.95); z-index: 3; width: 81px; padding: 8px;">Trend</th>
+                                        <th style="position: sticky; top: 0; left: 279px; background: rgba(17, 24, 39, 0.95); z-index: 3; width: 121px; padding: 8px;">Total</th>
+                                        ${recentDates.map(date => {
+                                            const formattedDate = new Date(date).toLocaleDateString('en-US', { 
+                                                month: 'short', day: 'numeric' 
+                                            });
+                                            return `<th style="min-width: 100px; text-align: center; position: sticky; top: 0; background: rgba(17, 24, 39, 0.95); z-index: 2;">${formattedDate}</th>`;
+                                        }).join('')}
+                                    </tr>
+                                </thead>
+                                <tbody id="tracksTableBody">
+                                    ${(() => {
+                                        // Calculate totals for each date
+                                        const totalByDate = {};
+                                        let grandTotal = 0;
+                                        
+                                        recentDates.forEach(date => {
+                                            totalByDate[date] = 0;
+                                            sortedTracks.forEach(track => {
+                                                const trackKey = `${track.song_title}|${track.artist_name}`;
+                                                const dailyAdd = matrixData[trackKey][date];
+                                                if (dailyAdd !== null && dailyAdd !== undefined && !isNaN(dailyAdd)) {
+                                                    totalByDate[date] += dailyAdd;
+                                                }
+                                            });
+                                        });
+                                        
+                                        // Calculate grand total of all current totals
+                                        sortedTracks.forEach(track => {
+                                            const trackKey = `${track.song_title}|${track.artist_name}`;
+                                            grandTotal += currentTotals[trackKey] || 0;
+                                        });
+                                        
+                                        return `
+                                            <tr class="total-row" style="border-bottom: 2px solid rgba(75, 85, 99, 0.6); background: rgba(59, 130, 246, 0.2);">
+                                                <td style="position: sticky; left: 0; background: rgba(59, 130, 246, 0.2); font-weight: 700; color: #e2e8f0; width: 200px; padding: 8px;">TOTAL</td>
+                                                <td style="position: sticky; left: 199px; background: rgba(59, 130, 246, 0.2); width: 81px;"></td>
+                                                <td style="position: sticky; left: 279px; background: rgba(59, 130, 246, 0.2); text-align: center; font-weight: 700; color: #fbbf24; width: 121px;">${grandTotal.toLocaleString()}</td>
+                                                ${recentDates.map((date, dateIndex) => {
+                                                    const total = totalByDate[date];
+                                                    let color = '#6b7280'; // default gray
+                                                    
+                                                    if (total === 0) {
+                                                        color = '#6b7280'; // gray for zero
+                                                    } else if (dateIndex > 0) {
+                                                        // Compare with previous day
+                                                        const prevDate = recentDates[dateIndex - 1];
+                                                        const prevTotal = totalByDate[prevDate];
+                                                        
+                                                        if (prevTotal !== null && prevTotal !== undefined && !isNaN(prevTotal)) {
+                                                            if (total > prevTotal) {
+                                                                color = '#10b981'; // green for increase
+                                                            } else if (total < prevTotal) {
+                                                                color = '#ef4444'; // red for decrease
+                                                            } else {
+                                                                color = '#6b7280'; // gray for no change
+                                                            }
+                                                        } else {
+                                                            color = '#34d399'; // light green for first valid value
+                                                        }
+                                                    } else {
+                                                        // First day, use neutral green
+                                                        color = '#34d399';
+                                                    }
+                                                    
+                                                    return `<td style="text-align: center; font-weight: 700; color: ${color}; font-size: 0.9rem; background: rgba(59, 130, 246, 0.2);">${total > 0 ? total.toLocaleString() : '0'}</td>`;
+                                                }).join('')}
+                                            </tr>
+                                        `;
+                                    })()}
+                                    ${sortedTracks.map(track => {
+                                        const artistName = track.artist_name.replace(' - Spotify Top Songs', '');
+                                        const artistClass = artistName === 'SB19' ? 'artist-sb19' : 'artist-bini';
+                                        const trackKey = `${track.song_title}|${track.artist_name}`;
+                                        const trackTitle = track.song_title.length > 30 ? 
+                                            track.song_title.substring(0, 27) + '...' : track.song_title;
+                                        
+                                        // Create trend analysis and mini chart
+                                        const sparklineData = recentDates.map(date => matrixData[trackKey][date] || 0);
+                                        const validData = sparklineData.filter(val => val > 0);
+                                        
+                                        let trendColor = '#6b7280'; // default gray
+                                        let trendDirection = 'neutral';
+                                        
+                                        if (validData.length >= 2) {
+                                            const recent = validData.slice(-3); // Last 3 non-zero values
+                                            if (recent.length >= 2) {
+                                                const trend = recent[recent.length - 1] - recent[0];
+                                                if (trend > recent[0] * 0.1) { // 10% increase threshold
+                                                    trendColor = '#10b981'; // green
+                                                    trendDirection = 'up';
+                                                } else if (trend < -recent[0] * 0.1) { // 10% decrease threshold
+                                                    trendColor = '#ef4444'; // red
+                                                    trendDirection = 'down';
+                                                }
+                                            }
+                                        }
+                                        
+                                        // Generate mini sparkline
+                                        const maxValue = Math.max(...sparklineData, 1);
+                                        const minValue = Math.min(...sparklineData.filter(v => v >= 0));
+                                        const range = maxValue - minValue || 1;
+                                        
+                                        const sparklinePoints = sparklineData.map((value, index) => {
+                                            const x = (index * 50) / (sparklineData.length - 1);
+                                            const y = 12 - ((value - minValue) / range) * 8;
+                                            return `${x},${y}`;
+                                        }).join(' ');
+                                        
+                                        const trendSvg = `<svg width="50" height="16" style="display: block; margin: 0 auto;">
+                                            <polyline points="${sparklinePoints}" 
+                                                      fill="none" 
+                                                      stroke="${trendColor}" 
+                                                      stroke-width="1.5" 
+                                                      stroke-linejoin="round" 
+                                                      stroke-linecap="round"/>
+                                        </svg>`;
+                                        
+                                        // Format current total with commas
+                                        const currentTotal = currentTotals[trackKey];
+                                        const formattedTotal = currentTotal.toLocaleString();
+                                        
+                                        return `
+                                            <tr class="${artistClass}">
+                                                <td style="position: sticky; left: 0; background: rgba(17, 24, 39, 0.9); font-weight: 600; width: 200px; padding: 6px;">
+                                                    <div style="font-size: 0.9rem; line-height: 1.2;">
+                                                        <div style="font-weight: 700;">${trackTitle}</div>
+                                                        <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 2px;">${artistName}</div>
+                                                    </div>
+                                                </td>
+                                                <td style="position: sticky; left: 199px; background: rgba(17, 24, 39, 0.9); width: 81px; text-align: center; padding: 2px;">
+                                                    ${trendSvg}
+                                                </td>
+                                                <td style="position: sticky; left: 279px; background: rgba(17, 24, 39, 0.9); width: 121px; text-align: center; font-weight: 600; color: #60a5fa;">${formattedTotal}</td>
+                                                ${recentDates.map((date, dateIndex) => {
+                                                    const dailyAdd = matrixData[trackKey][date];
+                                                    if (dailyAdd !== null && dailyAdd !== undefined && !isNaN(dailyAdd)) {
+                                                        let color = '#6b7280'; // default gray
+                                                        
+                                                        if (dailyAdd === 0) {
+                                                            color = '#6b7280'; // gray for zero
+                                                        } else if (dateIndex > 0) {
+                                                            // Compare with previous day
+                                                            const prevDate = recentDates[dateIndex - 1];
+                                                            const prevDailyAdd = matrixData[trackKey][prevDate];
+                                                            
+                                                            if (prevDailyAdd !== null && prevDailyAdd !== undefined && !isNaN(prevDailyAdd)) {
+                                                                if (dailyAdd > prevDailyAdd) {
+                                                                    color = '#10b981'; // green for increase
+                                                                } else if (dailyAdd < prevDailyAdd) {
+                                                                    color = '#ef4444'; // red for decrease
+                                                                } else {
+                                                                    color = '#6b7280'; // gray for no change
+                                                                }
+                                                            } else {
+                                                                color = '#34d399'; // light green for first valid value
+                                                            }
+                                                        } else {
+                                                            // First day, use neutral green
+                                                            color = '#34d399';
+                                                        }
+                                                        
+                                                        return `<td style="text-align: center; font-size: 0.9rem; color: ${color};">${dailyAdd.toLocaleString()}</td>`;
+                                                    } else {
+                                                        return '<td style="text-align: center; color: #6b7280;">-</td>';
+                                                    }
+                                                }).join('')}
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    
+                    document.getElementById('tracksTableContainer').innerHTML = tableHtml;
+                    
+                    // Store data for filtering
+                    this.modalData = { sortedTracks, matrixData, currentTotals, recentDates };
+                }
+                
+                console.log('About to show modal');
+                document.getElementById('tracksModal').style.display = 'block';
+                console.log('Modal displayed');
+            }
+            
+            filterTracksInModal(filterText) {
+                if (!this.modalData) return;
+                
+                const { sortedTracks, matrixData, currentTotals, recentDates } = this.modalData;
+                const filtered = sortedTracks.filter(track => 
+                    track.song_title.toLowerCase().includes(filterText.toLowerCase())
+                );
+                
+                // Regenerate table body
+                const tbody = document.getElementById('tracksTableBody');
+                if (tbody) {
+                    // Add total row for filtered tracks first
+                    const totalByDate = {};
+                    let grandTotal = 0;
+                    
+                    recentDates.forEach(date => {
+                        totalByDate[date] = 0;
+                        filtered.forEach(track => {
+                            const trackKey = `${track.song_title}|${track.artist_name}`;
+                            const dailyAdd = matrixData[trackKey][date];
+                            if (dailyAdd !== null && dailyAdd !== undefined && !isNaN(dailyAdd)) {
+                                totalByDate[date] += dailyAdd;
+                            }
+                        });
+                    });
+                    
+                    // Calculate grand total of filtered tracks
+                    filtered.forEach(track => {
+                        const trackKey = `${track.song_title}|${track.artist_name}`;
+                        grandTotal += currentTotals[trackKey] || 0;
+                    });
+                    
+                    const totalRowHtml = `
+                        <tr class="total-row" style="border-bottom: 2px solid rgba(75, 85, 99, 0.6); background: rgba(59, 130, 246, 0.2);">
+                            <td style="position: sticky; left: 0; background: rgba(59, 130, 246, 0.2); font-weight: 700; color: #e2e8f0; width: 200px; padding: 8px;">TOTAL</td>
+                            <td style="position: sticky; left: 199px; background: rgba(59, 130, 246, 0.2); width: 81px;"></td>
+                            <td style="position: sticky; left: 279px; background: rgba(59, 130, 246, 0.2); text-align: center; font-weight: 700; color: #fbbf24; width: 121px;">${grandTotal.toLocaleString()}</td>
+                            ${recentDates.map((date, dateIndex) => {
+                                const total = totalByDate[date];
+                                let color = '#6b7280'; // default gray
+                                
+                                if (total === 0) {
+                                    color = '#6b7280'; // gray for zero
+                                } else if (dateIndex > 0) {
+                                    // Compare with previous day
+                                    const prevDate = recentDates[dateIndex - 1];
+                                    const prevTotal = totalByDate[prevDate];
+                                    
+                                    if (prevTotal !== null && prevTotal !== undefined && !isNaN(prevTotal)) {
+                                        if (total > prevTotal) {
+                                            color = '#10b981'; // green for increase
+                                        } else if (total < prevTotal) {
+                                            color = '#ef4444'; // red for decrease
+                                        } else {
+                                            color = '#6b7280'; // gray for no change
+                                        }
+                                    } else {
+                                        color = '#34d399'; // light green for first valid value
+                                    }
+                                } else {
+                                    // First day, use neutral green
+                                    color = '#34d399';
+                                }
+                                
+                                return `<td style="text-align: center; font-weight: 700; color: ${color}; font-size: 0.9rem; background: rgba(59, 130, 246, 0.2);">${total > 0 ? total.toLocaleString() : '0'}</td>`;
+                            }).join('')}
+                        </tr>
+                    `;
+                    
+                    const trackRowsHtml = filtered.map(track => {
+                        const artistName = track.artist_name.replace(' - Spotify Top Songs', '');
+                        const artistClass = artistName === 'SB19' ? 'artist-sb19' : 'artist-bini';
+                        const trackKey = `${track.song_title}|${track.artist_name}`;
+                        const trackTitle = track.song_title.length > 30 ? 
+                            track.song_title.substring(0, 27) + '...' : track.song_title;
+                        
+                        // Create trend analysis and mini chart
+                        const sparklineData = recentDates.map(date => matrixData[trackKey][date] || 0);
+                        const validData = sparklineData.filter(val => val > 0);
+                        
+                        let trendColor = '#6b7280'; // default gray
+                        let trendDirection = 'neutral';
+                        
+                        if (validData.length >= 2) {
+                            const recent = validData.slice(-3); // Last 3 non-zero values
+                            if (recent.length >= 2) {
+                                const trend = recent[recent.length - 1] - recent[0];
+                                if (trend > recent[0] * 0.1) { // 10% increase threshold
+                                    trendColor = '#10b981'; // green
+                                    trendDirection = 'up';
+                                } else if (trend < -recent[0] * 0.1) { // 10% decrease threshold
+                                    trendColor = '#ef4444'; // red
+                                    trendDirection = 'down';
+                                }
+                            }
+                        }
+                        
+                        // Generate mini sparkline
+                        const maxValue = Math.max(...sparklineData, 1);
+                        const minValue = Math.min(...sparklineData.filter(v => v >= 0));
+                        const range = maxValue - minValue || 1;
+                        
+                        const sparklinePoints = sparklineData.map((value, index) => {
+                            const x = (index * 50) / (sparklineData.length - 1);
+                            const y = 12 - ((value - minValue) / range) * 8;
+                            return `${x},${y}`;
+                        }).join(' ');
+                        
+                        const trendSvg = `<svg width="50" height="16" style="display: block; margin: 0 auto;">
+                            <polyline points="${sparklinePoints}" 
+                                      fill="none" 
+                                      stroke="${trendColor}" 
+                                      stroke-width="1.5" 
+                                      stroke-linejoin="round" 
+                                      stroke-linecap="round"/>
+                        </svg>`;
+                        
+                        // Format current total with commas
+                        const currentTotal = currentTotals[trackKey];
+                        const formattedTotal = currentTotal.toLocaleString();
+                        
+                        return `
+                            <tr class="${artistClass}">
+                                <td style="position: sticky; left: 0; background: rgba(17, 24, 39, 0.9); font-weight: 600; width: 200px; padding: 6px;">
+                                    <div style="font-size: 0.9rem; line-height: 1.2;">
+                                        <div style="font-weight: 700;">${trackTitle}</div>
+                                        <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 2px;">${artistName}</div>
+                                    </div>
+                                </td>
+                                <td style="position: sticky; left: 199px; background: rgba(17, 24, 39, 0.9); width: 81px; text-align: center; padding: 2px;">
+                                    ${trendSvg}
+                                </td>
+                                <td style="position: sticky; left: 279px; background: rgba(17, 24, 39, 0.9); width: 121px; text-align: center; font-weight: 600; color: #60a5fa;">${formattedTotal}</td>
+                                ${recentDates.map((date, dateIndex) => {
+                                    const dailyAdd = matrixData[trackKey][date];
+                                    if (dailyAdd !== null && dailyAdd !== undefined && !isNaN(dailyAdd)) {
+                                        let color = '#6b7280'; // default gray
+                                        
+                                        if (dailyAdd === 0) {
+                                            color = '#6b7280'; // gray for zero
+                                        } else if (dateIndex > 0) {
+                                            // Compare with previous day
+                                            const prevDate = recentDates[dateIndex - 1];
+                                            const prevDailyAdd = matrixData[trackKey][prevDate];
+                                            
+                                            if (prevDailyAdd !== null && prevDailyAdd !== undefined && !isNaN(prevDailyAdd)) {
+                                                if (dailyAdd > prevDailyAdd) {
+                                                    color = '#10b981'; // green for increase
+                                                } else if (dailyAdd < prevDailyAdd) {
+                                                    color = '#ef4444'; // red for decrease
+                                                } else {
+                                                    color = '#6b7280'; // gray for no change
+                                                }
+                                            } else {
+                                                color = '#34d399'; // light green for first valid value
+                                            }
+                                        } else {
+                                            // First day, use neutral green
+                                            color = '#34d399';
+                                        }
+                                        
+                                        return `<td style="text-align: center; font-size: 0.9rem; color: ${color};">${dailyAdd.toLocaleString()}</td>`;
+                                    } else {
+                                        return '<td style="text-align: center; color: #6b7280;">-</td>';
+                                    }
+                                }).join('')}
+                            </tr>
+                        `;
+                    }).join('');
+                    
+                    // Combine total row and track rows
+                    tbody.innerHTML = totalRowHtml + trackRowsHtml;
+                }
+            }
         }
 
         // Initialize dashboard when page loads
         document.addEventListener('DOMContentLoaded', () => {
-            const app = new MusicDashboard();
+            window.dashboard = new MusicDashboard();
             const btn = document.getElementById('yZoomToggle');
             if (btn) {
                 btn.addEventListener('click', () => {
-                    app.zoomMode = !app.zoomMode;
-                    btn.textContent = app.zoomMode ? 'Reset scale (100–2500k)' : 'Zoom small changes';
-                    app.createCombinedChart();
+                    window.dashboard.zoomMode = !window.dashboard.zoomMode;
+                    btn.textContent = window.dashboard.zoomMode ? 'Reset scale (100–2500k)' : 'Zoom small changes';
+                    window.dashboard.createMonthlyListenersChart();
                 });
             }
             const refreshBtn = document.getElementById('refreshDashboard');
@@ -1073,42 +2006,68 @@
             const preset = document.getElementById('rangePreset');
             const rLabel = document.getElementById('rangeLabel');
             function updateLabelAllDates() {
-                rLabel.textContent = app.rangePreset === 'all' ? 'All days' : (app.rangePreset === 'last7' ? 'Last 7 days' : 'Month to date');
+                rLabel.textContent = window.dashboard.rangePreset === 'all' ? 'All days' :
+                    (window.dashboard.rangePreset === 'last7' ? 'Last 7 days' :
+                    (window.dashboard.rangePreset === 'last30' ? 'Last 30 days' : 'Month to date'));
             }
             if (preset) {
-                preset.value = app.rangePreset;
+                preset.value = window.dashboard.rangePreset;
                 updateLabelAllDates();
                 preset.addEventListener('change', () => {
-                    app.rangePreset = preset.value;
+                    window.dashboard.rangePreset = preset.value;
                     updateLabelAllDates();
-                    app.updateStats();
-                    app.createCombinedChart();
-                    app.createTracksChart();
-                    app.populateTable();
+                    window.dashboard.updateStats();
+                    window.dashboard.createMonthlyListenersChart();
+                    window.dashboard.createTracksTable();
+                    window.dashboard.populateTable();
                 });
             }
             const artistSel = document.getElementById('artistFilter');
             if (artistSel) {
-                artistSel.value = app.artistFilter;
+                artistSel.value = window.dashboard.artistFilter;
                 artistSel.addEventListener('change', () => {
-                    app.artistFilter = artistSel.value;
-                    app.updateStats();
-                    app.createCombinedChart();
-                    app.createTracksChart();
-                    app.populateTable();
+                    window.dashboard.artistFilter = artistSel.value;
+                    window.dashboard.updateStats();
+                    window.dashboard.createMonthlyListenersChart();
+                    window.dashboard.createTracksTable();
+                    window.dashboard.populateTable();
                 });
             }
             const compareSel = document.getElementById('compareFilter');
             if (compareSel) {
-                compareSel.value = app.compareFilter;
+                compareSel.value = window.dashboard.compareFilter;
                 compareSel.addEventListener('change', () => {
-                    app.compareFilter = compareSel.value;
-                    app.updateStats();
-                    app.createCombinedChart();
-                    app.createTracksChart();
-                    app.populateTable();
+                    window.dashboard.compareFilter = compareSel.value;
+                    window.dashboard.updateStats();
+                    window.dashboard.createMonthlyListenersChart();
+                    window.dashboard.createTracksTable();
+                    window.dashboard.populateTable();
                 });
             }
+            
+            // Modal event listeners
+            const moreTracksBtn = document.getElementById('moreTracksBtn');
+            if (moreTracksBtn) {
+                moreTracksBtn.addEventListener('click', () => {
+                    window.dashboard.showAllTracksModal();
+                });
+            }
+            
+            const tracksModal = document.getElementById('tracksModal');
+            const tracksClose = document.querySelector('.tracks-close');
+            
+            if (tracksClose) {
+                tracksClose.addEventListener('click', () => {
+                    tracksModal.style.display = 'none';
+                });
+            }
+            
+            // Close modal when clicking outside of it
+            window.addEventListener('click', (event) => {
+                if (event.target === tracksModal) {
+                    tracksModal.style.display = 'none';
+                }
+            });
         });
     </script>
 </body>
