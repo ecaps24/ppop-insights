@@ -1,0 +1,8 @@
+{
+  "build_time": "2025-09-06T08:30:01.641889",
+  "build_type": "static",
+  "data_files": {
+    "monthly_listeners": "data/historical/monthly_listeners.csv",
+    "comprehensive_streams": "data/historical/comprehensive_streams.csv"
+  }
+}

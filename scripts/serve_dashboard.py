@@ -21,9 +21,16 @@ class CORSRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.send_response(200)
         self.end_headers()
 
-def serve_dashboard(port=8000):
+def serve_dashboard(port=None):
     """Start the dashboard server"""
-    os.chdir('/home/ecaps24/dev/ppop-insights')
+    # Use PORT environment variable if set, otherwise default to 8080
+    if port is None:
+        port = int(os.environ.get('PORT', 8080))
+    
+    # Change to the parent directory of the scripts folder
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_dir = os.path.dirname(script_dir)
+    os.chdir(project_dir)
     
     with socketserver.TCPServer(("", port), CORSRequestHandler) as httpd:
         print(f"🎵 Music Dashboard Server starting...")

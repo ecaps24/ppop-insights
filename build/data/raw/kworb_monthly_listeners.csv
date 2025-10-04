@@ -1,0 +1,6 @@
+artist_name,monthly_listeners,rank,daily_change,source_url,scrape_date,data_source,extraction_method
+BINI,1940101,5001,N/A,https://kworb.net/spotify/listeners3.html,2025-08-31 20:55:16,kworb.net,kworb_regex_alt
+BINI,1752427,7501,N/A,https://kworb.net/spotify/listeners4.html,2025-08-31 20:55:22,kworb.net,kworb_regex_alt
+SB19,1679155,7871,N/A,https://kworb.net/spotify/listeners4.html,2025-08-31 20:55:22,kworb.net,kworb_regex_alt
+BINI,7tNO3vJC9zlHy2IJOx34ga,1940101,https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga,2025-08-31 21:00:07,kworb.net,kworb_scraper
+SB19,3g7vYcdDXnqnDKYFwqXBJP,1679155,https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP,2025-08-31 21:00:10,kworb.net,kworb_scraper

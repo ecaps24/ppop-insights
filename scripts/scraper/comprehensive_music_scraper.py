@@ -42,6 +42,32 @@ class ComprehensiveMusicScraper:
         match = re.search(r'/artist/([^/_]+)', url)
         return match.group(1) if match else 'unknown_artist'
     
+    def extract_last_update_date(self, html_content):
+        """Extract the 'Last updated' date from kworb page"""
+        # Look for "Last updated: YYYY/MM/DD" pattern
+        patterns = [
+            r'Last updated:\s*([0-9]{4}/[0-9]{2}/[0-9]{2})',
+            r'last updated:\s*([0-9]{4}/[0-9]{2}/[0-9]{2})',
+            r'Updated:\s*([0-9]{4}/[0-9]{2}/[0-9]{2})',
+            r'updated:\s*([0-9]{4}/[0-9]{2}/[0-9]{2})'
+        ]
+        
+        for pattern in patterns:
+            match = re.search(pattern, html_content, re.IGNORECASE)
+            if match:
+                # Convert from YYYY/MM/DD to YYYY-MM-DD format
+                date_str = match.group(1).replace('/', '-')
+                try:
+                    # Validate the date format
+                    from datetime import datetime
+                    datetime.strptime(date_str, '%Y-%m-%d')
+                    return date_str
+                except ValueError:
+                    continue
+        
+        # If no last update date found, return None
+        return None
+
     def extract_artist_name(self, html_content):
         """Extract artist name from the page"""
         # Try multiple patterns to find artist name
@@ -66,9 +92,15 @@ class ComprehensiveMusicScraper:
             response.raise_for_status()
             html_content = response.text
             
-            # Extract artist info
+            # Extract artist info and last update date
             artist_id = self.extract_artist_id_from_url(artist_url)
             artist_name = self.extract_artist_name(html_content)
+            kworb_last_updated = self.extract_last_update_date(html_content)
+            
+            if kworb_last_updated:
+                print(f"   📅 Kworb last updated: {kworb_last_updated}")
+            else:
+                print(f"   ⚠️  Could not find kworb last update date")
             
             # Find all song rows in the table
             song_pattern = r'<tr[^>]*>.*?</tr>'
@@ -82,8 +114,8 @@ class ComprehensiveMusicScraper:
                 if 'Total' in row or 'Song' in row or not re.search(r'\d+,\d+', row):
                     continue
                 
-                # Extract song data from the row
-                song_data = self.extract_song_data_from_row(row, artist_name, artist_id, artist_url, rank)
+                # Extract song data from the row, including kworb last update date
+                song_data = self.extract_song_data_from_row(row, artist_name, artist_id, artist_url, rank, kworb_last_updated)
                 
                 if song_data:
                     songs.append(song_data)
@@ -101,7 +133,7 @@ class ComprehensiveMusicScraper:
             print(f"   ❌ Error scraping {artist_url}: {e}")
             return []
     
-    def extract_song_data_from_row(self, row_html, artist_name, artist_id, source_url, rank):
+    def extract_song_data_from_row(self, row_html, artist_name, artist_id, source_url, rank, kworb_last_updated=None):
         """Extract comprehensive song data from a table row"""
         try:
             # Extract song title (usually first link in the row)
@@ -144,6 +176,9 @@ class ComprehensiveMusicScraper:
                         daily_streams = num
                         break
             
+            # Use kworb last update date as the primary date, scrape_date as reference
+            primary_date = kworb_last_updated if kworb_last_updated else datetime.now().strftime('%Y-%m-%d')
+            
             return {
                 'artist_name': artist_name,
                 'artist_id': artist_id,
@@ -153,7 +188,9 @@ class ComprehensiveMusicScraper:
                 'total_streams': total_streams,
                 'daily_streams': daily_streams,
                 'source_url': source_url,
-                'scrape_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                'data_date': primary_date,  # When kworb last updated this data
+                'scrape_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),  # When we scraped it
+                'data_source_updated': kworb_last_updated is not None
             }
             
         except Exception as e:
@@ -230,8 +267,8 @@ class ComprehensiveMusicScraper:
         
         fieldnames = [
             'artist_name', 'artist_id', 'rank', 'song_title', 'spotify_track_id',
-            'total_streams', 'daily_streams', 'source_url', 'scrape_date',
-            'spotify_url', 'has_spotify_id', 'data_confidence'
+            'total_streams', 'daily_streams', 'source_url', 'data_date', 'scrape_date',
+            'data_source_updated', 'spotify_url', 'has_spotify_id', 'data_confidence'
         ]
         
         # Add any extra fields that might be in the data

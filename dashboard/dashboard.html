@@ -930,8 +930,9 @@
                             borderWidth: 3,
                             datalabels: {
                                 display: function(context) {
-                                    // Only show label on the last data point
-                                    return context.dataIndex === context.dataset.data.length - 1;
+                                    // Show labels on the latest 3 data points
+                                    const dataLength = context.dataset.data.length;
+                                    return context.dataIndex >= dataLength - 3;
                                 },
                                 align: 'top',
                                 offset: 8,

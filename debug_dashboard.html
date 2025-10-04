@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Dashboard</title>
+</head>
+<body>
+    <h1>Debug Dashboard</h1>
+    <div id="status">Loading...</div>
+    <div id="data-count">0 records loaded</div>
+    <div id="error" style="color: red; display: none;"></div>
+    <div id="data-preview"></div>
+
+    <script>
+        async function testDataLoading() {
+            try {
+                console.log('Starting debug test...');
+                document.getElementById('status').textContent = 'Testing data loading...';
+
+                // Test CSV loading exactly like the main dashboard
+                const sources = ['/data/historical/monthly_listeners.csv'];
+                let allData = [];
+
+                for (const source of sources) {
+                    try {
+                        console.log(`Loading from: ${source}`);
+                        const url = `${source}${source.includes('?') ? '&' : '?'}t=${Date.now()}`;
+                        const response = await fetch(url, { cache: 'no-store' });
+                        console.log(`Response status: ${response.status}`);
+
+                        if (response.ok) {
+                            const csvText = await response.text();
+                            console.log(`CSV text length: ${csvText.length}`);
+                            console.log('First 200 chars:', csvText.substring(0, 200));
+
+                            // Use the same parsing logic as the dashboard
+                            const sourceData = parseCSV(csvText);
+                            console.log(`Parsed ${sourceData.length} records`);
+                            allData = allData.concat(sourceData);
+                        } else {
+                            console.error(`Failed to load ${source}: ${response.status}`);
+                        }
+                    } catch (e) {
+                        console.error(`Could not load ${source}:`, e);
+                    }
+                }
+
+                console.log(`Total data records: ${allData.length}`);
+                document.getElementById('status').textContent = 'Data loaded successfully!';
+                document.getElementById('data-count').textContent = `${allData.length} records loaded`;
+                document.getElementById('data-preview').innerHTML = '<pre>' + JSON.stringify(allData.slice(0, 5), null, 2) + '</pre>';
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('status').textContent = 'Error loading data';
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error').textContent = error.message;
+            }
+        }
+
+        // CSV parsing function similar to the main dashboard
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            if (lines.length < 2) return [];
+
+            const headers = lines[0].split(',').map(h => h.trim());
+            const data = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = parseCSVLine(lines[i]);
+                if (values.length === headers.length) {
+                    const record = {};
+                    headers.forEach((header, index) => {
+                        record[header] = values[index].trim();
+                    });
+
+                    // Convert numeric fields
+                    if (record.monthly_listeners) {
+                        record.monthly_listeners = parseInt(record.monthly_listeners) || 0;
+                    }
+
+                    data.push(record);
+                }
+            }
+
+            return data;
+        }
+
+        function parseCSVLine(line) {
+            const values = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    values.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            values.push(current);
+            return values;
+        }
+
+        // Start test when page loads
+        window.addEventListener('load', testDataLoading);
+    </script>
+</body>
+</html>

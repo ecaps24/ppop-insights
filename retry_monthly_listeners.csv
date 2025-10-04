@@ -1,0 +1,3 @@
+artist_name,artist_id,monthly_listeners,source_url,scrape_date,data_source,extraction_method
+Unsupported browser,3g7vYcdDXnqnDKYFwqXBJP,0,https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP,2025-08-28 21:53:36,spotify.com,mobile_failed
+BINI,7tNO3vJC9zlHy2IJOx34ga,1957760,https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga,2025-08-28 21:53:43,spotify.com,mobile_scraper

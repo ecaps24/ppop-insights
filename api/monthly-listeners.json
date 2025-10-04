@@ -1,0 +1,916 @@
+{
+  "status": "success",
+  "last_updated": "2025-09-06T08:30:01.551414",
+  "data": [
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1968585",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-07-25 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1710166",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-07-25 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1974149",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-07-26 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1721813",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-07-26 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1971041",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-07-27 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1712355",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-07-27 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1966216",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-07-28 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1711160",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-07-28 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1978840",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-07-29 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1713901",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-07-29 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1977688",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-07-30 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1712326",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-07-30 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1976259",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-07-31 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1718242",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-07-31 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1979735",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-01 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1718206",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-01 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1975831",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-02 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1719155",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-02 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1980036",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-03 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1718725",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-03 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1981456",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-04 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1721606",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-04 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1970252",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-05 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1713758",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-05 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1971266",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-06 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1721125",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-06 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1977903",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-07 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1720245",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-07 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1972074",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-08 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1713236",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-08 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1978359",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-09 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1721904",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-09 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1979839",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-10 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1725623",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-10 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1975335",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-11 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1716303",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-11 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1972238",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-12 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1722307",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-12 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1979040",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-13 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1717339",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-13 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1982742",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-14 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1717899",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-14 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1977119",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-15 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1717674",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-15 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1977477",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-16 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1722766",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-16 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1977592",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-17 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1719638",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-17 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1982684",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-18 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1698821",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-18 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1974513",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-19 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1703054",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-19 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1981704",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-20 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1712256",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-20 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1974140",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-21 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1712956",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-21 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1984899",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-22 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1716854",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-22 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1975952",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-23 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1718563",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-23 18:17:49",
+      "data_source": "spotify.com",
+      "extraction_method": "historical_sample"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1720632",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-24 16:16:35",
+      "data_source": "spotify.com",
+      "extraction_method": "known_exact"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1977848",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-24 16:16:38",
+      "data_source": "spotify.com",
+      "extraction_method": "known_exact"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1969129",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-25 16:21:41",
+      "data_source": "spotify.com",
+      "extraction_method": "webfetch_verified"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1721621",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-25 16:21:41",
+      "data_source": "spotify.com",
+      "extraction_method": "webfetch_verified"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1964068",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-26 12:42:00",
+      "data_source": "spotify.com",
+      "extraction_method": "webfetch_verified"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1719775",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-26 12:42:00",
+      "data_source": "spotify.com",
+      "extraction_method": "webfetch_verified"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1724972",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-27 03:49:06",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_scraper"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1963675",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-27 03:49:19",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_scraper"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1963675",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-27 03:52:35",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_scraper"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1721850",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-28 01:03:19",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_scraper"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1957760",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-28 21:53:43",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_scraper"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1713501",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-29 01:03:19",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_scraper"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1950617",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-29 01:03:33",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_scraper"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1713501",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-30 02:07:08",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_scraper"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1950617",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-30 02:07:16",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_scraper"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1706141",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-30 12:55:21",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_scraper"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1943970",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-30 12:55:30",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_scraper"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1679155",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-08-31 21:03:36",
+      "data_source": "kworb.net",
+      "extraction_method": "kworb_fallback_alt"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1940101",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-08-31 21:03:44",
+      "data_source": "kworb.net",
+      "extraction_method": "kworb_fallback_alt"
+    },
+    {
+      "artist_name": "Unknown Artist",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "0",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-09-02 21:47:34",
+      "data_source": "spotify.com",
+      "extraction_method": "not_found"
+    },
+    {
+      "artist_name": "Unknown Artist",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "0",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-09-02 21:47:37",
+      "data_source": "spotify.com",
+      "extraction_method": "not_found"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1669322",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-09-02 21:50:09",
+      "data_source": "kworb.net",
+      "extraction_method": "kworb_fallback_alt"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1918140",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-09-02 21:50:21",
+      "data_source": "kworb.net",
+      "extraction_method": "kworb_fallback_alt"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1669322",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-09-03 03:24:45",
+      "data_source": "kworb.net",
+      "extraction_method": "kworb_fallback_alt"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1918140",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-09-03 03:24:53",
+      "data_source": "kworb.net",
+      "extraction_method": "kworb_fallback_alt"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1665671",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-09-03 14:24:46",
+      "data_source": "kworb.net",
+      "extraction_method": "kworb_fallback_alt"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1911383",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-09-03 14:24:54",
+      "data_source": "kworb.net",
+      "extraction_method": "kworb_fallback_alt"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1665671",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-09-04 01:35:26",
+      "data_source": "kworb.net",
+      "extraction_method": "kworb_fallback_alt"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1911383",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-09-04 01:35:33",
+      "data_source": "kworb.net",
+      "extraction_method": "kworb_fallback_alt"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1664113",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-09-04 01:36:48",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_scraper"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1906399",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-09-04 01:36:56",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_scraper"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1664113",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-09-04 01:49:55",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_scraper"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1906399",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-09-04 01:50:03",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_scraper"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1662627",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-09-05 02:07:18",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_scraper"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1901274",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-09-05 02:07:25",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_scraper"
+    },
+    {
+      "artist_name": "Unsupported browser",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "0",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-09-05 08:00:02",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_failed"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1901274",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-09-05 08:00:09",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_scraper"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1662627",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-09-05 14:19:18",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_scraper"
+    },
+    {
+      "artist_name": "Unsupported browser",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "0",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-09-05 14:19:24",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_failed"
+    },
+    {
+      "artist_name": "SB19",
+      "artist_id": "3g7vYcdDXnqnDKYFwqXBJP",
+      "monthly_listeners": "1656494",
+      "source_url": "https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP",
+      "scrape_date": "2025-09-06 08:00:01",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_scraper"
+    },
+    {
+      "artist_name": "BINI",
+      "artist_id": "7tNO3vJC9zlHy2IJOx34ga",
+      "monthly_listeners": "1891801",
+      "source_url": "https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga",
+      "scrape_date": "2025-09-06 08:00:07",
+      "data_source": "spotify.com",
+      "extraction_method": "mobile_scraper"
+    }
+  ],
+  "total_records": 101
+}

@@ -23,6 +23,23 @@ class EnhancedMonthlyListenersScraper:
     def __init__(self):
         self.sessions = []
         self.current_session_idx = 0
+        
+        # Define backup URLs for SB19 and BINI - ONLY Kworb (reliable source)
+        self.backup_urls = {
+            '3g7vYcdDXnqnDKYFwqXBJP': {  # SB19
+                'name': 'SB19',
+                'backups': [
+                    'https://kworb.net/spotify/artist/3g7vYcdDXnqnDKYFwqXBJP.html'
+                ]
+            },
+            '7tNO3vJC9zlHy2IJOx34ga': {  # BINI
+                'name': 'BINI',
+                'backups': [
+                    'https://kworb.net/spotify/artist/7tNO3vJC9zlHy2IJOx34ga.html'
+                ]
+            }
+        }
+        
         self.user_agents = [
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -250,13 +267,173 @@ class EnhancedMonthlyListenersScraper:
         print(f"   ✅ {result['artist_name']}: {result['monthly_listeners']:,} monthly listeners [{result['extraction_method']}]")
         return result
     
+    def extract_backup_monthly_listeners(self, html_content, artist_url):
+        """Extract monthly listeners from backup URLs (kworb, chartmasters, spotifycharts)"""
+        
+        # Extract artist ID from original Spotify URL pattern or use backup mapping
+        artist_id_match = re.search(r'/artist/([a-zA-Z0-9]{22})', artist_url)
+        if not artist_id_match:
+            # If no artist ID in current URL, try to find which artist this backup URL belongs to
+            artist_id = 'unknown'
+            artist_name = 'Unknown Artist'
+            for aid, info in self.backup_urls.items():
+                if artist_url in info['backups']:
+                    artist_id = aid
+                    artist_name = info['name']
+                    break
+        else:
+            artist_id = artist_id_match.group(1)
+            # Get artist name from backup URLs mapping
+            artist_name = 'Unknown Artist'
+            if artist_id in self.backup_urls:
+                artist_name = self.backup_urls[artist_id]['name']
+        
+        # Extract monthly listeners from backup source HTML
+        monthly_listeners = 0
+        source = 'backup_not_found'
+        
+        # Determine source type from URL - ONLY accept Kworb
+        source_type = 'unknown'
+        if 'kworb.net' in artist_url:
+            source_type = 'kworb'
+        else:
+            # Return error for non-Kworb backup sources
+            return {
+                'artist_name': 'Error',
+                'artist_id': artist_id,
+                'monthly_listeners': 0,
+                'source_url': artist_url,
+                'scrape_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'data_source': 'rejected_source',
+                'extraction_method': 'non_kworb_backup_rejected'
+            }
+        
+        # Kworb-specific patterns for monthly listeners
+        backup_patterns = [
+            # Kworb specific patterns only
+            (r'Monthly\s+Listeners[:\s]*([0-9,]+)', f'{source_type}_standard'),
+            (r'([0-9,]+)\s*monthly\s+listeners', f'{source_type}_generic'),
+            # Kworb table format
+            (r'<td[^>]*>([0-9,]+)</td>[^<]*monthly', f'{source_type}_table'),
+            # Any 7+ digit number (likely monthly listeners on Kworb)
+            (r'([0-9,]{7,})', f'{source_type}_large_number'),
+        ]
+        
+        for pattern, method in backup_patterns:
+            matches = re.findall(pattern, html_content, re.IGNORECASE)
+            if matches:
+                try:
+                    # Clean and convert number
+                    raw_number = matches[0].replace(',', '')
+                    monthly_listeners = int(raw_number)
+                    source = method
+                    break
+                except ValueError:
+                    continue
+        
+        return {
+            'artist_name': artist_name,
+            'artist_id': artist_id,
+            'monthly_listeners': monthly_listeners,
+            'source_url': artist_url,
+            'scrape_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'data_source': source_type,
+            'extraction_method': source
+        }
+    
+    def get_exact_monthly_listeners_with_backup(self, artist_url):
+        """Get monthly listeners with backup URL fallback for SB19 and BINI"""
+        print(f"🎵 Scraping: {artist_url}")
+        
+        # First, try the original Spotify scraping
+        response = self.make_request(artist_url)
+        
+        if response:
+            result = self.extract_monthly_listeners(response.text, artist_url)
+            
+            # Check if we got valid data (monthly_listeners > 0)
+            if result['monthly_listeners'] > 0:
+                print(f"   ✅ {result['artist_name']}: {result['monthly_listeners']:,} monthly listeners [{result['extraction_method']}]")
+                return result
+            
+            print(f"   ⚠️  Spotify scraping returned 0 listeners, trying backup URLs...")
+        else:
+            print(f"   ❌ Spotify request failed, trying backup URLs...")
+        
+        # Extract artist ID to check for backup URLs
+        artist_id_match = re.search(r'/artist/([a-zA-Z0-9]{22})', artist_url)
+        if not artist_id_match:
+            print(f"   ❌ Could not extract artist ID from URL")
+            return {
+                'artist_name': 'Error',
+                'artist_id': 'unknown',
+                'monthly_listeners': 0,
+                'source_url': artist_url,
+                'scrape_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'data_source': 'spotify.com',
+                'extraction_method': 'url_parse_failed'
+            }
+        
+        artist_id = artist_id_match.group(1)
+        
+        # Check if we have backup URLs for this artist (SB19 or BINI)
+        if artist_id not in self.backup_urls:
+            print(f"   ⚠️  No backup URLs available for this artist")
+            return {
+                'artist_name': 'Unknown Artist',
+                'artist_id': artist_id,
+                'monthly_listeners': 0,
+                'source_url': artist_url,
+                'scrape_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'data_source': 'spotify.com',
+                'extraction_method': 'no_backup_available'
+            }
+        
+        # Try backup URLs
+        artist_info = self.backup_urls[artist_id]
+        artist_name = artist_info['name']
+        backup_urls = artist_info['backups']
+        
+        print(f"   🔄 Trying {len(backup_urls)} backup URL(s) for {artist_name}...")
+        
+        for i, backup_url in enumerate(backup_urls, 1):
+            print(f"   📊 Backup {i}/{len(backup_urls)}: {backup_url}")
+            
+            backup_response = self.make_request(backup_url)
+            if backup_response:
+                backup_result = self.extract_backup_monthly_listeners(backup_response.text, backup_url)
+                
+                if backup_result['monthly_listeners'] > 0:
+                    print(f"   ✅ {backup_result['artist_name']}: {backup_result['monthly_listeners']:,} monthly listeners [{backup_result['extraction_method']}] (from backup)")
+                    return backup_result
+                else:
+                    print(f"   ⚠️  Backup URL {i} returned 0 listeners")
+            else:
+                print(f"   ❌ Backup URL {i} request failed")
+            
+            # Small delay between backup attempts
+            if i < len(backup_urls):
+                time.sleep(1)
+        
+        # All attempts failed
+        print(f"   ❌ All scraping attempts failed for {artist_name}")
+        return {
+            'artist_name': artist_name,
+            'artist_id': artist_id,
+            'monthly_listeners': 0,
+            'source_url': artist_url,
+            'scrape_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'data_source': 'all_sources_failed',
+            'extraction_method': 'all_attempts_failed'
+        }
+    
     def scrape_multiple_artists(self, artist_urls, delay=3):
         """Scrape multiple artists with enhanced anti-bot techniques"""
         results = []
         
         for i, url in enumerate(artist_urls):
             print(f"\n📊 Progress: {i+1}/{len(artist_urls)}")
-            result = self.get_exact_monthly_listeners(url)
+            result = self.get_exact_monthly_listeners_with_backup(url)
             results.append(result)
             
             if i < len(artist_urls) - 1:

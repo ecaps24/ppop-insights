@@ -1,0 +1,3 @@
+artist_name,artist_id,primary_url,backup_urls,scraping_method
+SB19,3g7vYcdDXnqnDKYFwqXBJP,https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP,"https://kworb.net/spotify/artist/3g7vYcdDXnqnDKYFwqXBJP.html,https://chartmasters.org/spotify-monthly-listeners/sb19/,https://spotifycharts.com/regional/ph/daily/latest",kworb_spotify
+BINI,7tNO3vJC9zlHy2IJOx34ga,https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga,"https://kworb.net/spotify/artist/7tNO3vJC9zlHy2IJOx34ga.html,https://chartmasters.org/spotify-monthly-listeners/bini/,https://spotifycharts.com/regional/ph/daily/latest",kworb_spotify

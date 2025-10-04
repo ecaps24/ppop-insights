@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h2>Dashboard Test</h2>
+    <div style="width: 400px; height: 300px;">
+        <canvas id="testChart"></canvas>
+    </div>
+    
+    <script>
+        // Test if Chart.js works with simple data
+        const ctx = document.getElementById('testChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['SB19', 'BINI'],
+                datasets: [{
+                    label: 'Test Data',
+                    data: [1700000, 1900000],
+                    backgroundColor: ['rgba(96,165,250,0.85)', 'rgba(167,139,250,0.85)']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+        
+        // Test data loading
+        fetch('/data/historical/monthly_listeners.csv')
+            .then(response => response.text())
+            .then(data => {
+                const lines = data.split('\n').length;
+                document.body.innerHTML += `<p>✅ Monthly listeners CSV loaded: ${lines} lines</p>`;
+            })
+            .catch(err => {
+                document.body.innerHTML += `<p>❌ Error loading monthly listeners: ${err}</p>`;
+            });
+            
+        fetch('/data/historical/comprehensive_streams.csv')
+            .then(response => response.text())
+            .then(data => {
+                const lines = data.split('\n').length;
+                document.body.innerHTML += `<p>✅ Comprehensive streams CSV loaded: ${lines} lines</p>`;
+            })
+            .catch(err => {
+                document.body.innerHTML += `<p>❌ Error loading comprehensive streams: ${err}</p>`;
+            });
+    </script>
+</body>
+</html>

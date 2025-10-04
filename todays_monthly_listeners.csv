@@ -1,0 +1,3 @@
+artist_name,artist_id,monthly_listeners,source_url,scrape_date,data_source,extraction_method
+Error,unknown,0,https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP,2025-08-28 21:46:16,spotify.com,request_failed
+Error,unknown,0,https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga,2025-08-28 21:46:34,spotify.com,request_failed

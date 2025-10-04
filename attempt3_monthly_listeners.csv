@@ -1,0 +1,3 @@
+artist_name,artist_id,monthly_listeners,source_url,scrape_date,data_source,extraction_method
+SB19,3g7vYcdDXnqnDKYFwqXBJP,1713501,https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP,2025-08-29 01:03:19,spotify.com,mobile_scraper
+BINI,7tNO3vJC9zlHy2IJOx34ga,1950617,https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga,2025-08-29 01:03:33,spotify.com,mobile_scraper
