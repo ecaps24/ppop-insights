@@ -441,7 +441,10 @@
 
                 <!-- Data Table -->
                 <div class="chart-container chart-half chart-table">
-                    <div class="chart-title">Monthly Listeners Data</div>
+                    <div class="chart-title" style="display: flex; align-items: center; justify-content: space-between;">
+                        <span>Monthly Listeners Data</span>
+                        <button id="moreDetailsBtn" class="more-tracks-btn">More Details</button>
+                    </div>
                     <div class="chart-wrapper" style="overflow-y: auto; max-height: 280px;">
                         <table style="width: 100%; font-size: 12px; color: #e5e7eb;">
                             <thead style="position: sticky; top: 0; background: #111827; border-bottom: 1px solid rgba(255,255,255,0.1);">
@@ -493,6 +496,16 @@
             <h2 style="color: #f9fafb; margin-bottom: 10px;">Tracks Performance Matrix</h2>
             <p style="color: #9ca3af; margin-bottom: 20px;">All tracks with current totals and daily stream additions over the last 7 dates</p>
             <div id="tracksTableContainer"></div>
+        </div>
+    </div>
+
+    <!-- Monthly Listeners Details Modal -->
+    <div id="listenersModal" class="tracks-modal">
+        <div class="tracks-modal-content">
+            <button class="listeners-close">&times;</button>
+            <h2 style="color: #f9fafb; margin-bottom: 10px;">Monthly Listeners - Detailed View</h2>
+            <p style="color: #9ca3af; margin-bottom: 20px;">Complete monthly listeners data for the selected date range</p>
+            <div id="listenersTableContainer" style="overflow-y: auto; max-height: 600px;"></div>
         </div>
     </div>
 
@@ -1982,6 +1995,92 @@
                     tbody.innerHTML = totalRowHtml + trackRowsHtml;
                 }
             }
+
+            showListenersModal() {
+                console.log('showListenersModal called');
+                if (!this.data || this.data.length === 0) {
+                    alert('No monthly listeners data available.');
+                    return;
+                }
+
+                // Get filtered data based on current selections
+                const filteredData = this.getFilteredData();
+
+                if (filteredData.length === 0) {
+                    document.getElementById('listenersTableContainer').innerHTML =
+                        '<p style="text-align: center; color: #9ca3af; padding: 40px;">No data found for the selected date range.</p>';
+                } else {
+                    // Sort data by date descending (newest first)
+                    const sortedData = filteredData.sort((a, b) => new Date(b.data_date) - new Date(a.data_date));
+
+                    // Create table HTML
+                    const tableHtml = `
+                        <table style="width: 100%; font-size: 13px; color: #e5e7eb; border-collapse: collapse;">
+                            <thead style="position: sticky; top: 0; background: rgba(17, 24, 39, 0.98); z-index: 10;">
+                                <tr style="border-bottom: 2px solid rgba(75, 85, 99, 0.6);">
+                                    <th style="text-align: left; padding: 12px 8px; font-weight: 600;">Date</th>
+                                    <th style="text-align: left; padding: 12px 8px; font-weight: 600;">Artist</th>
+                                    <th style="text-align: right; padding: 12px 8px; font-weight: 600;">Monthly Listeners</th>
+                                    <th style="text-align: right; padding: 12px 8px; font-weight: 600;">Change</th>
+                                    <th style="text-align: right; padding: 12px 8px; font-weight: 600;">Change %</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${sortedData.map((record, index) => {
+                                    const date = new Date(record.data_date).toLocaleDateString('en-US', {
+                                        year: 'numeric', month: 'short', day: 'numeric'
+                                    });
+                                    const artistName = record.artist_name;
+                                    const artistClass = artistName === 'SB19' ? 'sb19' : 'bini';
+                                    const listeners = parseInt(record.monthly_listeners);
+                                    const change = parseInt(record.listener_change);
+
+                                    let changeColor = '#6b7280';
+                                    let changePercent = '';
+
+                                    if (change > 0) {
+                                        changeColor = '#10b981';
+                                        const prevListeners = listeners - change;
+                                        if (prevListeners > 0) {
+                                            const percent = ((change / prevListeners) * 100).toFixed(2);
+                                            changePercent = `+${percent}%`;
+                                        }
+                                    } else if (change < 0) {
+                                        changeColor = '#ef4444';
+                                        const prevListeners = listeners - change;
+                                        if (prevListeners > 0) {
+                                            const percent = ((change / prevListeners) * 100).toFixed(2);
+                                            changePercent = `${percent}%`;
+                                        }
+                                    } else {
+                                        changePercent = '0%';
+                                    }
+
+                                    const rowBg = index % 2 === 0 ? 'rgba(31, 41, 55, 0.3)' : 'rgba(17, 24, 39, 0.3)';
+
+                                    return `
+                                        <tr style="background: ${rowBg}; border-bottom: 1px solid rgba(75, 85, 99, 0.2);">
+                                            <td style="padding: 10px 8px;">${date}</td>
+                                            <td class="${artistClass}" style="padding: 10px 8px; font-weight: 600;">${artistName}</td>
+                                            <td style="text-align: right; padding: 10px 8px; font-weight: 600;">${listeners.toLocaleString()}</td>
+                                            <td style="text-align: right; padding: 10px 8px; color: ${changeColor}; font-weight: 600;">
+                                                ${change > 0 ? '+' : ''}${change.toLocaleString()}
+                                            </td>
+                                            <td style="text-align: right; padding: 10px 8px; color: ${changeColor}; font-weight: 600;">
+                                                ${changePercent}
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    `;
+
+                    document.getElementById('listenersTableContainer').innerHTML = tableHtml;
+                }
+
+                document.getElementById('listenersModal').style.display = 'block';
+            }
         }
 
         // Initialize dashboard when page loads
@@ -2053,20 +2152,40 @@
                     window.dashboard.showAllTracksModal();
                 });
             }
-            
+
             const tracksModal = document.getElementById('tracksModal');
             const tracksClose = document.querySelector('.tracks-close');
-            
+
             if (tracksClose) {
                 tracksClose.addEventListener('click', () => {
                     tracksModal.style.display = 'none';
                 });
             }
-            
+
+            // Monthly Listeners modal event listeners
+            const moreDetailsBtn = document.getElementById('moreDetailsBtn');
+            if (moreDetailsBtn) {
+                moreDetailsBtn.addEventListener('click', () => {
+                    window.dashboard.showListenersModal();
+                });
+            }
+
+            const listenersModal = document.getElementById('listenersModal');
+            const listenersClose = document.querySelector('.listeners-close');
+
+            if (listenersClose) {
+                listenersClose.addEventListener('click', () => {
+                    listenersModal.style.display = 'none';
+                });
+            }
+
             // Close modal when clicking outside of it
             window.addEventListener('click', (event) => {
                 if (event.target === tracksModal) {
                     tracksModal.style.display = 'none';
+                }
+                if (event.target === listenersModal) {
+                    listenersModal.style.display = 'none';
                 }
             });
         });

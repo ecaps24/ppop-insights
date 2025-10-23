@@ -1,3 +1,5 @@
 artist_name,artist_id,monthly_listeners,source_url,scrape_date,data_source,extraction_method
 Unknown Artist,3g7vYcdDXnqnDKYFwqXBJP,0,https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP,2025-08-30 02:02:10,spotify.com,not_found
 Unknown Artist,7tNO3vJC9zlHy2IJOx34ga,0,https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga,2025-08-30 02:02:12,spotify.com,not_found
+SB19,3g7vYcdDXnqnDKYFwqXBJP,0,https://open.spotify.com/artist/3g7vYcdDXnqnDKYFwqXBJP,2025-10-11 03:01:05,all_sources_failed,all_attempts_failed
+BINI,7tNO3vJC9zlHy2IJOx34ga,0,https://open.spotify.com/artist/7tNO3vJC9zlHy2IJOx34ga,2025-10-11 03:01:20,all_sources_failed,all_attempts_failed
