@@ -607,7 +607,7 @@
                     console.log('🔄 Starting data load...');
                     // Load monthly listeners data
                     const sources = [
-                        '/data/historical/monthly_listeners.csv'
+                        '../data/historical/monthly_listeners.csv'
                     ];
 
                     let allData = [];
@@ -813,7 +813,7 @@
 
             async loadStreamsData() {
                 try {
-                    const url = `/data/historical/comprehensive_streams.csv?t=${Date.now()}`;
+                    const url = `../data/historical/comprehensive_streams.csv?t=${Date.now()}`;
                     console.log('🔍 Loading streams data from:', url);
                     const response = await fetch(url, { cache: 'no-store' });
                     if (response.ok) {
